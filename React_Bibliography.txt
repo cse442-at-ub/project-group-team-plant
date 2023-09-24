@@ -1,0 +1,295 @@
+*This information was compiled from the official React website at https://react.dev/blog/2023/03/16/introducing-react-dev
+
+01. Creating and nesting components
+React apps are made out of components, these components themselves are JavaScript functions that return markup:
+
+function MyButton() {
+  return (
+    <button>I'm a button</button>
+  );
+}
+
+When creating a React component it must start with a capital letter as components that start with lower case are HTML tags.
+
+Now that the MyButton function has been created it can be nested in another component:
+
+export default function MyApp() {
+  return (
+    <div>
+      <h1>Welcome to my app</h1>
+      <MyButton />
+    </div>
+  );
+}
+
+Since the components themselves are JavaScript it will also be helpful to review https://developer.mozilla.org/en-US/docs/web/javascript/reference/statements/export 
+and 
+https://javascript.info/import-export for additional guidance on JavaScript syntax.
+
+02. Writing markup with JSX
+
+The above markup syntax is called JSX which is what most React projects use. JSX is stricter than HTML by forcing you to close tags like <br /> and restricting the number of JSX tags returned to one. Tags must also be wrapped into a shared parent, such as <div>....</div> or an empty wrapper <>.....</>.
+
+function AboutPage() {
+  return (
+    <>
+      <h1>About</h1>
+      <p>Hello there.<br />How do you do?</p>
+    </>
+  );
+}
+
+If you predominantly use HTML, there is an online converter to change it to JSX https://transform.tools/html-to-jsx
+
+03. Adding Styles
+
+CSS classes are specified with className
+
+<img className="avatar" />
+
+The CSS rules would be written in a seperate CSS file
+
+/* In your CSS */
+.avatar {
+  border-radius: 50%;
+}
+
+React does not prescribe how you add CSS files, oftentimes you will add a <link> tag to your HTML.
+
+04. Displaying data
+
+JSX allows putting markup into JavaScript. Curly braces let you “escape back” into JavaScript so that you can embed some variable from your code and display it to the user.
+
+return (
+  <h1>
+    {user.name}
+  </h1>
+);
+
+You can also "escape into JavaScript" from JSX attributes, however curly braces must be used instead of quotes.
+For example, className="avatar" passes the "avatar" string as the CSS class, but src={user.imageUrl} reads the JavaScript user.imageUrl variable value, and then passes that value as the src attribute:
+
+return (
+  <img
+    className="avatar"
+    src={user.imageUrl}
+  />
+);
+
+longer example:
+
+const user = {
+  name: 'Hedy Lamarr',
+  imageUrl: 'https://i.imgur.com/yXOvdOSs.jpg',
+  imageSize: 90,
+};
+
+export default function Profile() {
+  return (
+    <>
+      <h1>{user.name}</h1>
+      <img
+        className="avatar"
+        src={user.imageUrl}
+        alt={'Photo of ' + user.name}
+        style={{
+          width: user.imageSize,
+          height: user.imageSize
+        }}
+      />
+    </>
+  );
+}
+
+05. Conditional rendering
+
+React does not have special syntax for conditionals, instead you would use the same techniques used in JavaScript:
+
+let content;
+if (isLoggedIn) {
+  content = <AdminPanel />;
+} else {
+  content = <LoginForm />;
+}
+return (
+  <div>
+    {content}
+  </div>
+);
+
+or for a more compact form:
+
+<div>
+  {isLoggedIn ? (
+    <AdminPanel />
+  ) : (
+    <LoginForm />
+  )}
+</div>
+
+if the else branch is not needed:
+
+<div>
+  {isLoggedIn && <AdminPanel />}
+</div>
+
+06. Rendering lists
+
+Again React does not have special syntax for lists, instead you will rely on Javascript for loop and array map() function to render lists.
+
+const products = [
+  { title: 'Cabbage', id: 1 },
+  { title: 'Garlic', id: 2 },
+  { title: 'Apple', id: 3 },
+];
+
+This shows using the map function to change an array of products into an array of <li> items
+
+const listItems = products.map(product =>
+  <li key={product.id}>
+    {product.title}
+  </li>
+);
+
+return (
+  <ul>{listItems}</ul>
+);
+
+longer example:
+
+const products = [
+  { title: 'Cabbage', isFruit: false, id: 1 },
+  { title: 'Garlic', isFruit: false, id: 2 },
+  { title: 'Apple', isFruit: true, id: 3 },
+];
+
+export default function ShoppingList() {
+  const listItems = products.map(product =>
+    <li
+      key={product.id}
+      style={{
+        color: product.isFruit ? 'magenta' : 'darkgreen'
+      }}
+    >
+      {product.title}
+    </li>
+  );
+
+  return (
+    <ul>{listItems}</ul>
+  );
+}
+
+07. Responding to events
+
+Events can be responded to by declaring event handler functions inside components.
+
+function MyButton() {
+  function handleClick() {
+    alert('You clicked me!');
+  }
+
+  return (
+    <button onClick={handleClick}>
+      Click me
+    </button>
+  );
+}
+
+Do not call the event handler function as it only needs to be passed down. In this case React will call the event handler when the user clicks the button.
+
+08. Updating the screen
+
+If an item that tracks a persistent value, such as how many times queries have been made or something clicked, than this can be done by adding state to the component.
+
+First useState needs to be imported:
+
+import { useState } from 'react';
+
+now a state variable can be declared:
+
+function MyButton() {
+  const [count, setCount] = useState(0);
+  // ...
+
+useState provides (count) which is the current state and (setCount) which is the function to update (count).
+
+function MyButton() {
+  const [count, setCount] = useState(0);  //this is the initial value of (count), can be set to whatever
+
+  function handleClick() {
+    setCount(count + 1);
+  }
+
+  return (
+    <button onClick={handleClick}>
+      Clicked {count} times
+    </button>
+  );
+}
+
+longer example:
+
+import { useState } from 'react';
+
+export default function MyApp() {
+  return (
+    <div>
+      <h1>Counters that update separately</h1>
+      <MyButton />
+      <MyButton />
+    </div>
+  );
+}
+
+function MyButton() {
+  const [count, setCount] = useState(0);
+
+  function handleClick() {
+    setCount(count + 1);
+  }
+
+  return (
+    <button onClick={handleClick}>
+      Clicked {count} times
+    </button>
+  );
+}
+
+09. Using Hooks
+
+Functions beginning with use are called Hooks. i.e. useState is a built-in Hook.
+Other built-in Hooks can be found here https://react.dev/reference/react
+Hooks are more restrictive than other functions in that they can only be called at the top of your components (for other Hooks). 
+
+10. Sharing data between components
+
+With the above count examples each individual button would maintain its own state. However if you have multiple components that need to share data between them than you would need to move the state from the individual buttons to the closest component containing all of them.
+
+example:
+
+import { useState } from 'react';
+
+export default function MyApp() {
+  const [count, setCount] = useState(0);
+
+  function handleClick() {
+    setCount(count + 1);
+  }
+
+  return (
+    <div>
+      <h1>Counters that update together</h1>
+      <MyButton count={count} onClick={handleClick} />
+      <MyButton count={count} onClick={handleClick} />
+    </div>
+  );
+}
+
+function MyButton({ count, onClick }) {
+  return (
+    <button onClick={onClick}>
+      Clicked {count} times
+    </button>
+  );
+}
