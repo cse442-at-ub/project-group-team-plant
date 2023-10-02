@@ -39,26 +39,33 @@
             }
         }
     }
+    ?>
+    
+    <h4><b>Change Username</b></h4><br>
 
-  Current Username: <input type="text" name="current_user" value="">
-
-  <br><br>
-
-  Current Password: <input type="text" name="current_pass" value="">
-
-  <br><br>
-
-  New Username: <input type="text" name="new_user" value="">
-
-  <br><br>
-
-  New Password: <input type="text" name="new_pass" value="">
-
-  <br><br>
-
-  <form action="runPHPhere.php">
-    <input type="Submit" name="Submit" value="Submit" onclick="runPHP()" />
-  </form>
+    <form method="post">
+    Current Username: <input type="text" name="current_user">
+    <br><br>
+    Current Password: <input type="text" name="current_pass">
+    <br><br>
+    New Username: <input type="text" name="new_user">
+    <br><br>
+      <input type="submit" name="change_username" class="button" value="change_username"/>
+    </form>
+  
+    <br><br>
+  
+    <h4><b>Change Password</b></h4><br>
+  
+    <form method="post">
+    Current Username: <input type="text" name="current_user">
+    <br><br>
+    Current Password: <input type="text" name="current_pass">
+    <br><br>
+    New Password: <input type="text" name="new_pass">
+    <br><br>
+      <input type="submit" name="change_password" class="button" value="change_password"/>
+    </form>
 
 </body>
 </html>
