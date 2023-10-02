@@ -1,0 +1,246 @@
+body { /* body format */
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+    position: relative;
+}
+
+.bg-image { /* background image */
+    background-image: url('images/background.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: scroll;
+    width: 100vw;
+    height: 100vh;
+}
+
+.bg-image::before { /* adds the soft light filter */
+    content: "";
+    background: rgba(255, 255, 255, 0.7);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+
+.button-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: rgba(185, 224, 162, 1); /* Set the background color with transparency */
+    padding: 15px 20px; /* Adjust the padding (top and bottom) to make it taller */
+    height: auto; /* Remove the height property to allow the bar to grow with content */
+    position: absolute;
+    top: 35px; /* Adjust the top position to 100 pixels */
+    left: 0;
+    right: 0;
+    z-index: 2;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    color: rgb(0, 0, 0); /* Set the text color without transparency */
+    font-weight: 400; /* Optionally, make the text bold */
+    font-family: 'Poppins', sans-serif; /* Set the desired font-family for text */
+}
+
+.logo img {
+    width: 30px; /* Adjust the size of the logo */
+    height: 30px;
+    margin-right: 10px; /* Add some spacing between the logo and text */
+}
+
+nav ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+nav li {
+    display: inline;
+    margin-right: 20px; /* Add spacing between navigation links */
+}
+
+nav a {
+    text-decoration: none;
+    color: #000000; /* Set your desired link color */
+    font-weight: 400; /* Optionally, make the links bold */
+    font-family: 'Work Sans', sans-serif; /* Apply the Work Sans font */
+    transition: color 0.3s; /* Add a smooth transition for color changes */
+}
+
+/* Add hover effect */
+nav a:hover {
+    color: #45a049; /* Set the desired link color on hover */
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+.text-boxes { /* text boxes above zip code box */
+    position: absolute;
+    top: 50%;
+    left: 40%;
+    transform: translate(-50%, -50%);
+    text-align: left; /* Align text to the left within each box */
+    z-index: 3;
+  }
+  
+.text-box {
+    margin-bottom: 15px; /* Reduce the gap between text boxes */
+  }
+  
+.work-sans-text {
+    font-family: 'Work Sans', sans-serif;
+    font-size: 56px;
+    font-weight: 200;
+    color: #000000; /* Text color (black) */
+  }
+  
+.source-sans-text {
+    font-family: 'Work Sans', sans-serif;
+    font-size: 18px;
+    font-weight: 200;
+    color: #000000; /* Text color (black) */
+  }
+
+.zip-code-box {
+    position: absolute;
+    top: 220px; /* Adjust the vertical position (higher value moves it further up) */
+    left: 0; /* Adjust the horizontal position (lower value moves it to the left) */
+    display: flex;
+    align-items: center;
+    z-index: 3; /* Ensure the text box is on top of other elements */
+}
+
+.zip-code-box input[type="text"] {
+    padding: 17px;
+    border: none;
+    outline: none;
+    font-family: 'Work Sans', sans-serif;
+    font-size: 16px;
+    color: #000000;
+    width: 250px; /* Increase the width as needed */
+    box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.5); /* Add a drop shadow effect */
+    transition: box-shadow 0.3s; /* Add a smooth transition for the shadow */
+}
+
+.zip-code-box button {
+    padding: 17px 25px;
+    background-color: #b9e0a2; /* Green background color */
+    border: none;
+    outline: none;
+    cursor: pointer;
+    font-family: 'Work Sans', sans-serif;
+    font-size: 16px;
+    color: #ffffff; /* White text color */
+    margin-left: 10px; /* Add spacing between input and button */
+    box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.5); /* Add a drop shadow effect */
+    transition: box-shadow 0.3s; /* Add a smooth transition for the shadow */
+}
+
+.zip-code-box button:hover {
+    background-color: #45a049; /* Darker green on hover */
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .zip-code-box {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .zip-code-box input[type="text"] {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+
+    .zip-code-box button {
+        margin-left: 0;
+    }
+}
+
+.new-sections-container {
+    display: flex;
+    justify-content: space-between; /* To distribute the sections evenly */
+    position: absolute;
+    bottom: 1;
+    left: 1;
+    right: 1;
+    background-color: #b9e0a2;
+    padding: 20px;
+  }
+  
+  .section-container {
+    display: flex;
+  }
+  
+  .section.left .work-sans-text,
+  .section.center .work-sans-text,
+  .section.right .work-sans-text {
+    font-family: 'Work Sans', sans-serif;
+    font-size: 35px;
+    font-weight: 600;
+    color: #000000;
+    margin-top: 35px; /* Adjust the margin-top value to add more space */
+  }
+  
+  /* Additional spacing below the header text for each section */
+  .section.left .work-sans-text {
+    margin-bottom: 15px;
+  }
+  
+  .section.center .work-sans-text {
+    margin-bottom: 15px;
+  }
+  
+  .section.right .work-sans-text {
+    margin-bottom: 15px;
+  }
+  
+  .section-text {
+    flex: 1;
+    padding-right: 20px;
+    margin-bottom: 45px; /* Adjust the margin to add more space */
+  }
+  
+  .section-text p {
+    margin: 0;
+  }
+  
+.pin-image {
+    max-width: 95px; /* Adjust the size as needed */
+    height: auto;
+}
+
+/* Define the size for the results.png image */
+.results-image {
+    max-width: 100px; /* Adjust the size as needed */
+    height: auto;
+}
+
+/* Define the size for the favorite.png image */
+.favorite-image {
+    max-width: 95px; /* Adjust the size as needed */
+    height: auto;
+}
+
+.centered-image {
+    position: absolute;
+    top: 53%; /* Adjust vertical position as needed */
+    right: 0;
+    transform: translateY(-50%); /* Center vertically using translateY */
+    z-index: 999; /* Adjust the z-index to ensure it's on top of other content */
+}
+
+@media (max-width: 1050px) {
+    .centered-image {
+        display: none; /* Hide the image on screens with a width of 768px or less */
+    }
+}

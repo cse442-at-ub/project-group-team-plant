@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Team Plant</title>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;600&display=swap" rel="stylesheet">
+
+</head>
+<body>
+
+    <div class="bg-image"></div>  <!-- Background image --> 
+
+    <div class="button-bar"> <!-- Button Bar -->
+        <div class="logo">
+            <img src="images/logo.jpg" alt="Team Plant Logo">
+            <span>Team Plant</span>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="#">Home</a></li>
+                <li><a href="#">About</a></li>
+                <li><a href="#">Login</a></li>
+                <li><a href="#">My Favorites</a></li>
+                <li><a href="#">Account</a></li>
+            </ul>
+        </nav>
+    </div>
+
+    <div class="text-boxes"> <!-- Text boxes above zip code box -->
+        <div class="text-box">
+          <p class="work-sans-text">Grow Local, Go Green,<br>Plant Perfect.</p>
+        </div>
+        <div class="text-box">
+          <p class="source-sans-text">Discover the perfect plants tailored to your location with <br>our personalized plant recommendation tool.</p>
+        </div>
+
+        <div class="zip-code-box"> <!-- Enter zip code box -->
+            <input type="text" id="zip-code-input" placeholder="Enter Zip Code" class="work-sans-text">
+            <button id="go-button" class="work-sans-text">GO!</button>
+        </div>
+        
+    </div>
+
+    <div class="centered-image">
+        <img src="images/leaves.png" alt="Centered Image" width="500" height="300">
+
+  </div>
+
+    <div class="new-sections-container">
+        <div class="section left">
+            <div class="section-text">
+                <p class="work-sans-text">
+                    Enter Location
+                    <img src="images/pin.png" alt="Left Image" class="pin-image">
+                </p>
+                <p class="source-sans-text">Start your plant journey by simply entering your zip code. This helps us recommend the perfect plants that thrive in your area’s unique conditions.</p>
+            </div>
+        </div>
+        <div class="section center">
+            <div class="section-text">
+                <p class="work-sans-text">
+                    Get Results
+                    <img src="images/results.png" alt="Center Image" class="results-image">
+                </p>
+                <p class="source-sans-text">Discover a world of green possibilities! With a click of a button, you’ll receive a tailored list of plants that will flourish in your area.</p>
+            </div>
+        </div>
+        <div class="section right">
+            <div class="section-text">
+                <p class="work-sans-text">
+                    Save Favorites
+                    <img src="images/favorite.png" alt="Right Image" class="favorite-image">
+                </p> 
+                <p class="source-sans-text">Found your ideal plants? Save them as favorites for quick access and easy reference. Your personalized plant collection is just a click away.</p>
+            </div>
+        </div>
+    </div>
+
+    <script> // This script listens for the user to click the go button while temporarily saving the zip code in local storage.
+             // How we are going to save this zip code is dependent on the back-end but will save it as a cookie for now.
+        document.addEventListener("DOMContentLoaded", function() {
+            const zipCodeInput = document.getElementById("zip-code-input");
+            const goButton = document.getElementById("go-button");
+    
+            goButton.addEventListener("click", function() {
+                const zipCode = zipCodeInput.value.trim();
+    
+                if (zipCode !== "") {
+                    // Save the zip code in local storage for future use
+                    localStorage.setItem("userZipCode", zipCode);
+    
+                    // Redirect to the desired page
+                    window.location.href = "index.html";
+                }
+            });
+        });
+    </script>
+
+    
+
+</body>
+</html>
