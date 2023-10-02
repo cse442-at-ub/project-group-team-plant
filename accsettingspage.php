@@ -6,10 +6,8 @@
   <h1><b>Change Username/Password</h1></b>
   <em><h4>To change your username or password, please enter your current information then
   your new username and/or password.</h4></em>
-
-  <br><br>
-
-  <?php
+    <br>
+    <?php
     $server = "oceanus.cse.buffalo.edu";
     $user = "sepalutr";
     $pass = "50338448";
@@ -39,8 +37,31 @@
             }
         }
     }
+
+    function change_username($conn, $username, $password){
+      $username = strval($_POST['current_user']);
+      $password = strval($_POST['current_pass']);
+      $newusername = strval($_POST['new_user']);
+  
+      if ($newusername == ""){
+              echo "Invalid input, please enter a different username.";
+              return;
+      }
+  
+      if ($newusername == $username){
+            echo "Invalid input, please enter a different username.";
+            return;
+      }
+  
+      $stmt = $conn->prepare("UPDATE accounts SET username=? WHERE username=?");
+      $stmt->bind_param("ss", $newusername, $username);
+      $stmt->execute();
+  
+      $stmt->close();
+    }
+
     ?>
-    
+
     <h4><b>Change Username</b></h4><br>
 
     <form method="post">
@@ -50,7 +71,7 @@
     <br><br>
     New Username: <input type="text" name="new_user">
     <br><br>
-      <input type="submit" name="change_username" class="button" value="change_username"/>
+      <input type="submit" name="change_username" class="button" value="Change Username"/>
     </form>
   
     <br><br>
@@ -64,7 +85,7 @@
     <br><br>
     New Password: <input type="text" name="new_pass">
     <br><br>
-      <input type="submit" name="change_password" class="button" value="change_password"/>
+      <input type="submit" name="change_password" class="button" value="Change Password"/>
     </form>
 
 </body>
