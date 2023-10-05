@@ -25,15 +25,18 @@
 		change_username($conn);
 	}else if(array_key_exists("change_password", $_POST)) {
 		change_password($conn);
+	}else if(array_key_exists("set_zip", $_POST)) {
+		set_zip($conn);
 	}else {
 		if(isset($_COOKIE['username'])){
-			if(verify_cookie($conn, $_COOKIE['username'], $_COOKIE['password'])){
+			if(verify_cookie($conn, $_COOKIE['username'], $_COOKIE['password'], $_COOKIE['auth'])){
 				echo "Signed in as " . $_COOKIE['username'];
 				login_account($conn,$_COOKIE['username'],$_COOKIE['password']);
 			}else{
 				echo "Invalid authentication cookie.";
 				setcookie ("username", $username, time()-(60*60), '/');
 				setcookie ("password", $password, time()-(60*60), '/');
+				setcookie ("auth", $password, time()-(60*60), '/');
 			}
 		}
 	}
@@ -63,33 +66,63 @@
 
   function change_password($conn){
     $username = strval($_POST['current_user']);
-		$password = strval($_POST['current_pass']);
+	$password = strval($_POST['current_pass']);
     $newpassword = strval($_POST['new_pass']);
 
     if ($newpassword == ""){
 			echo "Invalid input, please enter a different password.";
 			return;
     }
-
-    $stmt = $conn->prepare("UPDATE accounts SET password=? WHERE username=?");
-		$stmt->bind_param("ss", $newpassword, $username);
-		$stmt->execute();
-    $stmt->close();
-    login_account($conn, $username, $newpassword);
-    header('Refresh:0; Location: https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442k//accsettingspage.php');
+	
+	$stmt = $conn->prepare("SELECT * FROM accounts WHERE username=?");
+	$stmt->bind_param("s", $username);
+	$stmt->execute();
+	$result = $stmt->get_result();
+	$stmt->close();
+	if($result->num_rows > 0) {
+		while($row = $result->fetch_assoc()) {
+			$username = $row["username"];
+			$hash_pass = $row["password"];
+		}
+		if(password_verify(strval($password), strval($hash_pass))){
+			//CORRECT PASSWORD
+			$hashedpassword = strval(password_hash($newpassword, PASSWORD_DEFAULT));
+			$stmt = $conn->prepare("UPDATE accounts SET password=? WHERE username=?");
+			$stmt->bind_param("ss", $hashedpassword, $username);
+			$stmt->execute();
+			$stmt->close();
+			login_account($conn, $username, $newpassword);
+		} else {
+			echo "Password is incorrect.";
+		}
+	} else {
+		echo "Username not found.";
+	}
+    //header('Refresh:0; Location: https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442k//accsettingspage.php');
   }
 
   function set_zip($conn){
-    $username = strval($_POST['current_user']);
-		$password = strval($_POST['current_pass']);
-    $zipcode = strval($_POST['set_zip']);
-
-    $stmt = $conn->prepare("UPDATE accounts SET zipcode=? WHERE username=?");
-		$stmt->bind_param("ss", $zipcode, $username);
-		$stmt->execute();
-    $stmt->close();
-    login_account($conn, $username, $password);
-    header('Refresh:0; Location: https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442k//accsettingspage.php');
+    $zipcode = strval($_POST['new_zip']);
+	if(isset($_COOKIE['username'])){
+		if(verify_cookie($conn, $_COOKIE['username'], $_COOKIE['password'], $_COOKIE['auth'])){
+			//LOGGED IN
+			if(strlen($zipcode) != 5 OR !is_numeric($zipcode)){
+				echo "Invalid zip code. Please try again.";
+				return;
+			}
+			$username = $_COOKIE['username'];
+			$password = $_COOKIE['password'];
+			$stmt = $conn->prepare("UPDATE accounts SET zipcode=? WHERE username=?");
+			$stmt->bind_param("ss", $zipcode, $username);
+			$stmt->execute();
+			$stmt->close();
+			login_account($conn, $username, $password);
+			echo "Zipcode " . $zipcode . " saved.";
+		}
+	}else{
+			//NOT LOGGED IN
+			echo "NOT SIGNED IN";
+	}
   }
 
   function login_account($conn,$username,$password){
@@ -97,7 +130,7 @@
 		setcookie("password", $password, time()+(60*60), '/');
 	}
 
-  function verify_cookie($conn, $username, $password){
+	function verify_cookie($conn, $username, $password, $auth){
 		$stmt = $conn->prepare("SELECT * FROM accounts WHERE username=?");
 		$stmt->bind_param("s", $username);
 		$stmt->execute();
@@ -106,8 +139,9 @@
 			while($row = $result->fetch_assoc()) {
 				$input_user = $row["username"];
 				$hash_pass = $row["password"];
+				$table_auth = $row["auth"];
 			}
-			if(password_verify(strval($password), strval($hash_pass))){
+			if(password_verify(strval($password), strval($hash_pass)) AND $table_auth == $auth){
 				return true;
 			} else {
 				return false;
@@ -151,7 +185,7 @@
   <h4><b>Set Zip Code</b></h4><br>
 
   <form method="post">
-  Enter Zip Code: <input type="text" name="set_zip">
+  Enter Zip Code: <input type="text" name="new_zip">
   <br><br>
     <input type="submit" name="set_zip" class="button" value="Set Zip Code"/>
   </form>
