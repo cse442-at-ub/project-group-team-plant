@@ -27,13 +27,14 @@
 		signout($conn);
 	}else {
 		if(isset($_COOKIE['username'])){
-			if(verify_cookie($conn, $_COOKIE['username'], $_COOKIE['password'])){
+			if(verify_cookie($conn, $_COOKIE['username'], $_COOKIE['password'], $_COOKIE['auth'])){
 				echo "Signed in as " . $_COOKIE['username'];
 				login_account($conn,$_COOKIE['username'],$_COOKIE['password']);
 			}else{
 				echo "Invalid authentication cookie.";
 				setcookie ("username", $username, time()-(60*60), '/');
 				setcookie ("password", $password, time()-(60*60), '/');
+				setcookie ("auth", $password, time()-(60*60), '/');
 			}
 		}
 	}
@@ -107,6 +108,12 @@
 	function login_account($conn,$username,$password){ //LOGIN FUNCTIONALITY
 		setcookie("username", $username, time()+(60*60), '/');
 		setcookie("password", $password, time()+(60*60), '/');
+		$rand_num = rand();
+		$auth = password_hash($rand_num,PASSWORD_DEFAULT);
+		setcookie("auth", $auth, time()+(60*60), '/');
+		$stmt = $conn->prepare("UPDATE accounts SET auth = ? WHERE username = ?");
+		$stmt->bind_param("ss", $auth, $username);
+		$stmt->execute();
 	}
 	
 	function signout($conn){
@@ -116,7 +123,7 @@
 		echo "Signed out of account.";
 	}
 	
-	function verify_cookie($conn, $username, $password){
+	function verify_cookie($conn, $username, $password, $auth){
 		$stmt = $conn->prepare("SELECT * FROM accounts WHERE username=?");
 		$stmt->bind_param("s", $username);
 		$stmt->execute();
@@ -125,8 +132,9 @@
 			while($row = $result->fetch_assoc()) {
 				$input_user = $row["username"];
 				$hash_pass = $row["password"];
+				$table_auth = $row["auth"];
 			}
-			if(password_verify(strval($password), strval($hash_pass))){
+			if(password_verify(strval($password), strval($hash_pass)) AND $table_auth == $auth){
 				return true;
 			} else {
 				return false;
