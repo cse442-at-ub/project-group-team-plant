@@ -167,15 +167,16 @@ nav a:hover {
 }
 
 .new-sections-container {
-    display: flex;
-    justify-content: space-between; /* To distribute the sections evenly */
-    position: absolute;
-    bottom: 1;
-    left: 1;
-    right: 1;
-    background-color: #b9e0a2;
-    padding: 20px;
-  }
+  display: flex;
+  justify-content: space-between;
+  position: absolute;
+  bottom: 1; /* Adjust positioning to stick it to the very bottom of the page */
+  left: 1;
+  right: 1;
+  background-color: #b9e0a2;
+  padding: 10px;
+  box-shadow: 0px 10px 10px rgba(0, 0, 0, 1), 0px -10px 10px rgba(0, 0, 0, 1); /* Add drop shadows */
+}
   
   .section-container {
     display: flex;
@@ -242,5 +243,134 @@ nav a:hover {
 @media (max-width: 1050px) {
     .centered-image {
         display: none; /* Hide the image on screens with a width of 768px or less */
+    }
+}
+
+.content {
+    position: absolute;
+    top: 50%;
+    left: 70px; /* Adjust the left positioning as needed */
+    transform: translateY(-50%);
+    text-align: left;
+    z-index: 3; /* Adjust the z-index to ensure it's on top of other content */
+}
+
+/* Styles for the text box */
+.textbox {
+    padding: 20px;
+    border-radius: 10px;
+    margin-top: 600px;
+}
+
+/* Header style */
+.textbox h1 {
+    font-family: 'Work Sans', sans-serif;
+    font-size: 45px;
+    margin: 0;
+}
+
+/* Description style */
+.textbox p {
+    font-family: 'Source Sans Pro', sans-serif;
+    font-size: 20px;
+    margin-top: 10px;
+    font-weight: 200;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+    .content {
+        left: 10px; /* Adjust the left positioning for smaller screens */
+    }
+    .textbox {
+        padding: 10px;
+    }
+    .textbox h1 {
+        font-size: 36px;
+    }
+    .textbox p {
+        font-size: 20px;
+    }
+}
+
+.settings {
+    display: flex;
+    flex-wrap: wrap; /* Allow boxes to wrap to the next line */
+    gap: 20px;
+}
+
+.green-box {
+    background-color: #b9e0a2;
+    padding: 25px;
+    border-radius: 15px;
+    margin-top: 30px;
+    margin-left: 18px;
+    flex: 1;
+    display: flex;
+    flex-direction: column; /* Stack input containers vertically within green box */
+}
+
+/* Header style for both sections */
+.settings h2 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 18px;
+    color: #333;
+}
+
+/* Styles for input containers */
+.input-container {
+    display: flex;
+    flex-direction: column; /* Stack label and input vertically */
+    margin-top: 10px;
+}
+
+/* Label styles */
+.input-container input {
+    width: 100%; /* Take up full width */
+    padding: 6px;
+    font-family: 'Source Sans Pro', sans-serif;
+    font-size: 18px;
+    margin-top: 5px;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+    border: none;
+    outline: none;
+}
+
+/* Apply styles to input placeholders */
+.input-container input::placeholder {
+    font-family: 'Work Sans', sans-serif;
+    font-size: 12px;
+    color: #333;
+}
+
+/* Label styles (for the text to the left of input boxes) */
+.input-container label {
+    font-family: 'Poppins', sans-serif;
+    font-size: 14px;
+    color: #333;
+}
+
+/* Save button styles */
+.input-container .save-button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 14px;
+    color: #ffffff;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+    .settings {
+        flex-direction: column; /* Stack green boxes vertically on smaller screens */
+    }
+    .green-box {
+        margin-left: 0;
+        margin-right: 0;
     }
 }
