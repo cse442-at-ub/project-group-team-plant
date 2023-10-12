@@ -37,6 +37,8 @@ body { /* body format */
     left: 0;
     right: 0;
     z-index: 2;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1); /* Add a subtle box-shadow for depth */
+    background: linear-gradient(180deg, rgba(185, 224, 162, 1) 0%, rgba(185, 224, 162, 0.8) 100%); /* Add a subtle background gradient */
 }
 
 .logo {
@@ -230,20 +232,6 @@ nav a:hover {
 .favorite-image {
     max-width: 95px; /* Adjust the size as needed */
     height: auto;
-}
-
-.centered-image {
-    position: absolute;
-    top: 53%; /* Adjust vertical position as needed */
-    right: 0;
-    transform: translateY(-50%); /* Center vertically using translateY */
-    z-index: 999; /* Adjust the z-index to ensure it's on top of other content */
-}
-
-@media (max-width: 1050px) {
-    .centered-image {
-        display: none; /* Hide the image on screens with a width of 768px or less */
-    }
 }
 
 .content {

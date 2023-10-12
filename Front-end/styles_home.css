@@ -29,14 +29,16 @@ body { /* body format */
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: rgba(185, 224, 162, 1); /* Set the background color with transparency */
-    padding: 15px 20px; /* Adjust the padding (top and bottom) to make it taller */
-    height: auto; /* Remove the height property to allow the bar to grow with content */
+    background-color: rgba(185, 224, 162, 1);
+    padding: 15px 20px;
+    height: auto;
     position: absolute;
-    top: 35px; /* Adjust the top position to 100 pixels */
+    top: 35px;
     left: 0;
     right: 0;
     z-index: 2;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1); /* Add a subtle box-shadow for depth */
+    background: linear-gradient(180deg, rgba(185, 224, 162, 1) 0%, rgba(185, 224, 162, 0.8) 100%); /* Add a subtle background gradient */
 }
 
 .logo {
@@ -142,7 +144,7 @@ nav a:hover {
 }
 
 .zip-code-box button:hover {
-    background-color: #45a049; /* Darker green on hover */
+    background-color: #81b662; /* Darker green on hover */
 }
 
 .feature-box-container {
@@ -158,20 +160,28 @@ nav a:hover {
 }
 
 .feature-box {
-    background-color: #b9e0a2; /* Green background color */
-    color: #ffffff; /* White text color */
+    background-color: #b9e0a2;
+    color: #ffffff;
     font-family: 'Work Sans', sans-serif;
     padding: 20px;
     border-radius: 10px;
-    margin-bottom: 20px; /* Spacing between boxes */
-    width: 350px; /* Set the width of the boxes */
-    box-shadow: 3px 3px 6px rgba(82, 82, 82, 0.8); /* Add a drop shadow effect */
-    transition: box-shadow 0.3s; /* Add a smooth transition for the shadow */
+    margin-bottom: 20px;
+    width: 350px;
+    box-shadow: 3px 3px 6px rgba(82, 82, 82, 0.8);
+    transition: all 0.3s; /* Add a transition for all properties */
+}
+
+
+.feature-box:hover {
+    background-color: #81b662;
+    color: #ffffff;
+    box-shadow: 5px 5px 10px rgba(82, 82, 82, 1);
+    transform: translateY(-5px); /* Move the box 5px upward on hover */
 }
 
 .feature-box img {
     vertical-align: middle;
-    width: 60px; /* Adjust the icon size as needed */
+    width: 60px;
     margin-bottom: 10px;
 }
 
