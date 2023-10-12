@@ -169,7 +169,6 @@
 		<ul>
 			<li><a href="https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442k/home_page.php">Home</a></li>
 			<li><a href="">About</a></li>
-			<li><a href="https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442k/login_page.php">Login</a></li>
 			<li><a href="">My Favorites</a></li>
 			<li><a href=""><b>Account</b></a></li>
 		</ul>
@@ -242,6 +241,17 @@
 					</div>
 				</form>
 				
+			</div>
+
+			<div class="green-box">
+
+				<h2>Sign Out Here</h2>
+				<form method="post">
+					
+					<div class="input-container">
+						<button type="submit" class="save-button" name="signout">Sign Out</button>
+					</div>
+				</form>
 			</div>
 
 		</div>

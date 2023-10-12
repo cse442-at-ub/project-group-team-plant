@@ -37,6 +37,8 @@ body { /* body format */
     left: 0;
     right: 0;
     z-index: 2;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1); /* Add a subtle box-shadow for depth */
+    background: linear-gradient(180deg, rgba(185, 224, 162, 1) 0%, rgba(185, 224, 162, 0.8) 100%); /* Add a subtle background gradient */
 }
 
 .logo {
