@@ -10,7 +10,7 @@
 </head>
 <body>
 
-  <?php
+<?php
 	$server = "oceanus.cse.buffalo.edu";
 	$user = "aidannas";
 	$pass = "50136076";
@@ -28,6 +28,8 @@
 		change_password($conn);
 	}else if(array_key_exists("set_zip", $_POST)) {
 		set_zip($conn);
+	}else if(array_key_exists("sign_out", $_POST)) {
+		sign_out($conn);
 	}else {
 		if(isset($_COOKIE['username'])){
 			if(verify_cookie($conn, $_COOKIE['username'], $_COOKIE['password'], $_COOKIE['auth'])){
@@ -62,7 +64,7 @@
 		$stmt->execute();
     $stmt->close();
     login_account($conn, $newusername, $password);
-    header('Refresh:0; Location: https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442k//accsettingspage.php');
+    header('Location: https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442k//accsettingspage.php');
   }
 
   function change_password($conn){
@@ -125,6 +127,14 @@
 			echo "NOT SIGNED IN";
 	}
   }
+
+  function sign_out($conn){
+	setcookie("username", "", time()-3600, '/');
+	setcookie("password", "", time()-3600, '/');
+	setcookie("auth", "", time()-3600, '/');
+	header('Location: https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442k/login_page.php');
+	echo "Signed out of account.";
+	}
 
   function login_account($conn,$username,$password){
 		setcookie("username", $username, time()+(60*60), '/');
@@ -249,7 +259,7 @@
 				<form method="post">
 					
 					<div class="input-container">
-						<button type="submit" class="save-button" name="signout">Sign Out</button>
+						<button type="submit" class="save-button" name="sign_out">Sign Out</button>
 					</div>
 				</form>
 			</div>

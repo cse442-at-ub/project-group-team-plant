@@ -9,7 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;600&display=swap" rel="stylesheet">
 </head>
 <body>
-	<?php
+<?php
 	$server = "oceanus.cse.buffalo.edu";
 	$user = "sepalutr";
 	$pass = "50338448";
@@ -29,13 +29,15 @@
 		signout($conn);
 	}else {
 		if(isset($_COOKIE['username'])){
-			if(verify_cookie($conn, $_COOKIE['username'], $_COOKIE['password'])){
+			if(verify_cookie($conn, $_COOKIE['username'], $_COOKIE['password'], $_COOKIE['auth'])){
 				echo "Signed in as " . $_COOKIE['username'];
+				header("Location: https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442k/home_page.php");
 				login_account($conn,$_COOKIE['username'],$_COOKIE['password']);
 			}else{
 				echo "Invalid authentication cookie.";
 				setcookie ("username", $username, time()-(60*60), '/');
 				setcookie ("password", $password, time()-(60*60), '/');
+				setcookie ("auth", $password, time()-(60*60), '/');
 			}
 		}
 	}
@@ -43,6 +45,7 @@
 	function signup($conn){ //CREATE ACCOUNT FROM FORMS
 		if(isset($_COOKIE['username'])){
 			echo "Already signed in as " . $_COOKIE['username'];
+			header("Location: https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442k/home_page.php");
 			return;
 		}
 		$username = strval($_POST['new_user']);
@@ -79,6 +82,7 @@
 	function login($conn){ //CHECK LOGIN FORMS
 		if(isset($_COOKIE['username'])){
 			echo "Already signed in as " . $_COOKIE['username'];
+			header("Location: https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442k/home_page.php");
 			return;
 		}
 		$username = strval($_POST['log_user']);
@@ -97,6 +101,7 @@
 				echo "Now signed in as " . $username;
 				//LOGIN HERE
 				login_account($conn,$username,$password);
+				header("Location: https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442k/home_page.php");
 			} else {
 				echo "Password is incorrect.";
 			}
@@ -109,6 +114,12 @@
 	function login_account($conn,$username,$password){ //LOGIN FUNCTIONALITY
 		setcookie("username", $username, time()+(60*60), '/');
 		setcookie("password", $password, time()+(60*60), '/');
+		$rand_num = rand();
+		$auth = password_hash($rand_num,PASSWORD_DEFAULT);
+		setcookie("auth", $auth, time()+(60*60), '/');
+		$stmt = $conn->prepare("UPDATE accounts SET auth = ? WHERE username = ?");
+		$stmt->bind_param("ss", $auth, $username);
+		$stmt->execute();
 	}
 	
 	function signout($conn){
@@ -118,7 +129,7 @@
 		echo "Signed out of account.";
 	}
 	
-	function verify_cookie($conn, $username, $password){
+	function verify_cookie($conn, $username, $password, $auth){
 		$stmt = $conn->prepare("SELECT * FROM accounts WHERE username=?");
 		$stmt->bind_param("s", $username);
 		$stmt->execute();
@@ -127,8 +138,9 @@
 			while($row = $result->fetch_assoc()) {
 				$input_user = $row["username"];
 				$hash_pass = $row["password"];
+				$table_auth = $row["auth"];
 			}
-			if(password_verify(strval($password), strval($hash_pass))){
+			if(password_verify(strval($password), strval($hash_pass)) AND $table_auth == $auth){
 				return true;
 			} else {
 				return false;
