@@ -29,14 +29,13 @@
 		signout($conn);
 	}else {
 		if(isset($_COOKIE['username'])){
-			if(verify_cookie($conn, $_COOKIE['username'], $_COOKIE['password'], $_COOKIE['auth'])){
+			if(verify_cookie($conn, $_COOKIE['username'], $_COOKIE['auth'])){
 				echo "Signed in as " . $_COOKIE['username'];
 				header("Location: https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442k/home_page.php");
 				login_account($conn,$_COOKIE['username'],$_COOKIE['password']);
 			}else{
 				echo "Invalid authentication cookie.";
 				setcookie ("username", $username, time()-(60*60), '/');
-				setcookie ("password", $password, time()-(60*60), '/');
 				setcookie ("auth", $password, time()-(60*60), '/');
 			}
 		}
@@ -113,7 +112,7 @@
 	}
 	function login_account($conn,$username,$password){ //LOGIN FUNCTIONALITY
 		setcookie("username", $username, time()+(60*60), '/');
-		setcookie("password", $password, time()+(60*60), '/');
+		//setcookie("password", $password, time()+(60*60), '/');
 		$rand_num = rand();
 		$auth = password_hash($rand_num,PASSWORD_DEFAULT);
 		setcookie("auth", $auth, time()+(60*60), '/');
@@ -122,14 +121,16 @@
 		$stmt->execute();
 	}
 	
+	//DEPRECATED
+	/*
 	function signout($conn){
 		setcookie("username", "", time()-3600, '/');
 		setcookie("password", "", time()-3600, '/');
-		header('Refresh:0; Location: https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442k/loginsignuppage.php');
+		//header('Refresh:0; Location: https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442k/loginsignuppage.php');
 		echo "Signed out of account.";
-	}
+	}*/
 	
-	function verify_cookie($conn, $username, $password, $auth){
+	function verify_cookie($conn, $username, $auth){
 		$stmt = $conn->prepare("SELECT * FROM accounts WHERE username=?");
 		$stmt->bind_param("s", $username);
 		$stmt->execute();
@@ -137,10 +138,9 @@
 		if($result->num_rows > 0) {
 			while($row = $result->fetch_assoc()) {
 				$input_user = $row["username"];
-				$hash_pass = $row["password"];
 				$table_auth = $row["auth"];
 			}
-			if(password_verify(strval($password), strval($hash_pass)) AND $table_auth == $auth){
+			if($table_auth == $auth){
 				return true;
 			} else {
 				return false;
