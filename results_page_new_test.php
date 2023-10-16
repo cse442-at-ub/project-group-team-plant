@@ -88,6 +88,7 @@
       }
       $numOfPlants = count($plants);
       ?>
+      <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
       <table>
         <tr>
           <td>COMMON NAME </td>
@@ -96,21 +97,15 @@
           <td>GROWTH HABIT </td>
           <td>PDF LINK </td>
         </tr>
+        <?php foreach(range(0,$numOfPlants) as $i) : ?>
         <tr>
-          <?php foreach ($printPlants as $value) : ?>
-          <td><?php echo "$value <br>";?></td>
-          <?php endforeach; ?>
-          <?php foreach ($printLatin as $value) : ?>
-          <td><?php echo "$value <br>";?></td>
-          <?php endforeach; ?>
-          <?php foreach ($printSymbol as $value) : ?>
-          <td><?php echo "$value <br>";?></td>
-          <?php endforeach; ?>
-          <?php foreach ($printHabit as $value) : ?>
-          <td><?php echo "$value <br>";?></td>
-          <?php endforeach; ?>
+          <td><?php echo "$printPlants[$i] <br>";?></td>
+          <td><?php echo "$printLatin[$i] <br>";?></td>
+          <td><?php echo "$printSymbol[$i] <br>";?></td>
+          <td><?php echo "$printHabit[$i] <br>";?></td>
           <td><?php echo "nothing"; ?></td>
         </tr>
+        <?php endforeach; ?>
       </table>
 
 
