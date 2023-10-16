@@ -89,7 +89,7 @@
       $numOfPlants = count($plants);
       ?>
       <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
-      <table>
+      <table style="z-index:3; position:absolute;">
         <tr>
           <td>COMMON NAME </td>
           <td>SCIENTIFIC NAME </td>
@@ -98,12 +98,15 @@
           <td>PDF LINK </td>
         </tr>
         <?php foreach(range(0,$numOfPlants) as $i) : ?>
+        <?php $pgLink = "https://plants.usda.gov/DocumentLibrary/plantguide/pdf/pg_" . $printSymbol[$i] . ".pdf"; ?>
+        <?php $fsLink = "https://plants.usda.gov/DocumentLibrary/factsheet/pdf/fs_" . $printSymbol[$i] . ".pdf"; ?>
         <tr>
           <td><?php echo "$printPlants[$i] <br>";?></td>
           <td><?php echo "$printLatin[$i] <br>";?></td>
           <td><?php echo "$printSymbol[$i] <br>";?></td>
           <td><?php echo "$printHabit[$i] <br>";?></td>
-          <td><?php echo "nothing"; ?></td>
+          <td><?php echo "<a href=$pgLink>Plant Guide</a>"; ?></td>
+          <td><?php echo "<a href=$fsLink>Fact Sheet</a>"; ?></td>
         </tr>
         <?php endforeach; ?>
       </table>
