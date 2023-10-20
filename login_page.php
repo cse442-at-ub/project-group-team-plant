@@ -21,19 +21,19 @@
 		die("Connection failed: " . $conn->connection_error);
 	}
 	
-	if(array_key_exists("signup", $_POST)) {
+	if (array_key_exists("signup", $_POST)) {
 		signup($conn);
-	}else if(array_key_exists("login", $_POST)) {
+	} else if (array_key_exists("login", $_POST)) {
 		login($conn);
-	}else if(array_key_exists("signout", $_POST)) {
+	} else if (array_key_exists("signout", $_POST)) {
 		signout($conn);
-	}else {
-		if(isset($_COOKIE['username'])){
-			if(verify_cookie($conn, $_COOKIE['username'], $_COOKIE['auth'])){
+	} else {
+		if (isset($_COOKIE['username'])){
+			if (verify_cookie($conn, $_COOKIE['username'], $_COOKIE['auth'])){
 				echo "Signed in as " . $_COOKIE['username'];
-				header("Location: https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442k/home_page.php");
+				header("Location: https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442k");
 				login_account($conn,$_COOKIE['username'],$_COOKIE['password']);
-			}else{
+			} else {
 				echo "Invalid authentication cookie.";
 				setcookie ("username", $username, time()-(60*60), '/');
 				setcookie ("auth", $password, time()-(60*60), '/');
@@ -44,7 +44,7 @@
 	function signup($conn){ //CREATE ACCOUNT FROM FORMS
 		if(isset($_COOKIE['username'])){
 			echo "Already signed in as " . $_COOKIE['username'];
-			header("Location: https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442k/home_page.php");
+			header("Location: https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442k");
 			return;
 		}
 		$username = strval($_POST['new_user']);
@@ -81,7 +81,7 @@
 	function login($conn){ //CHECK LOGIN FORMS
 		if(isset($_COOKIE['username'])){
 			echo "Already signed in as " . $_COOKIE['username'];
-			header("Location: https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442k/home_page.php");
+			header("Location: https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442k");
 			return;
 		}
 		$username = strval($_POST['log_user']);
@@ -100,7 +100,7 @@
 				echo "Now signed in as " . $username;
 				//LOGIN HERE
 				login_account($conn,$username,$password);
-				header("Location: https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442k/home_page.php");
+				header("Location: https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442k");
 			} else {
 				echo "Password is incorrect.";
 			}
