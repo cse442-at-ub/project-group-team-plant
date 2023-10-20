@@ -21,6 +21,13 @@
 	if ($conn->connection_error) {
 		die("Connection failed: " . $conn->connection_error);
 	}
+	
+
+	// checks for valid cookie, if none, redirect to login page
+	if (!isset($_COOKIE['username']) || !isset($_COOKIE['auth']) || !verify_cookie($conn, $_COOKIE['username'], $_COOKIE['auth'])) {
+		header("Location: login_page.php");
+		exit();
+	}
 
 	if(array_key_exists("change_username", $_POST)) {
 		change_username($conn);
@@ -156,10 +163,8 @@
 		if($result->num_rows > 0) {
 			while($row = $result->fetch_assoc()) {
 				$input_user = $row["username"];
-				$hash_pass = $row["password"];
 				$table_auth = $row["auth"];
 			}
-			//password_verify(strval($password), strval($hash_pass)) AND
 			if($table_auth == $auth){
 				return true;
 			} else {
@@ -185,7 +190,7 @@
 	</div>
 	<nav>
 		<ul>
-			<li><a href="https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442k/home_page.php">Home</a></li>
+			<li><a href="https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442k/">Home</a></li>
 			<li><a href="">About</a></li>
 			<li><a href="">My Favorites</a></li>
 			<li><a href=""><b>Account</b></a></li>
