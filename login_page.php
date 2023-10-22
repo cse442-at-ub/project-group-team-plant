@@ -1,13 +1,15 @@
 <!DOCTYPE html>
+<html lang="en">
 <head>
-  <title>Login/Sign-Up Page</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Team Plant</title>
+    <link rel="stylesheet" type="text/css" href="Front-end/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;600&display=swap" rel="stylesheet">
 </head>
 <body>
-  <h1><b>Login or Sign-up to our website.</h1></b>
-  <em><h4>To login, fill out the fields under the login section and then click the button login to complete.
-  To sign-up, fill our the fields for a new username and new password under the sign-up section and use the button to complete.</h4></em>
-	<br>
-	<?php
+<?php
 	$server = "oceanus.cse.buffalo.edu";
 	$user = "sepalutr";
 	$pass = "50338448";
@@ -19,21 +21,21 @@
 		die("Connection failed: " . $conn->connection_error);
 	}
 	
-	if(array_key_exists("signup", $_POST)) {
+	if (array_key_exists("signup", $_POST)) {
 		signup($conn);
-	}else if(array_key_exists("login", $_POST)) {
+	} else if (array_key_exists("login", $_POST)) {
 		login($conn);
-	}else if(array_key_exists("signout", $_POST)) {
+	} else if (array_key_exists("signout", $_POST)) {
 		signout($conn);
-	}else {
-		if(isset($_COOKIE['username'])){
-			if(verify_cookie($conn, $_COOKIE['username'], $_COOKIE['password'], $_COOKIE['auth'])){
+	} else {
+		if (isset($_COOKIE['username'])){
+			if (verify_cookie($conn, $_COOKIE['username'], $_COOKIE['auth'])){
 				echo "Signed in as " . $_COOKIE['username'];
+				header("Location: https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442k");
 				login_account($conn,$_COOKIE['username'],$_COOKIE['password']);
-			}else{
+			} else {
 				echo "Invalid authentication cookie.";
 				setcookie ("username", $username, time()-(60*60), '/');
-				setcookie ("password", $password, time()-(60*60), '/');
 				setcookie ("auth", $password, time()-(60*60), '/');
 			}
 		}
@@ -42,6 +44,7 @@
 	function signup($conn){ //CREATE ACCOUNT FROM FORMS
 		if(isset($_COOKIE['username'])){
 			echo "Already signed in as " . $_COOKIE['username'];
+			header("Location: https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442k");
 			return;
 		}
 		$username = strval($_POST['new_user']);
@@ -78,6 +81,7 @@
 	function login($conn){ //CHECK LOGIN FORMS
 		if(isset($_COOKIE['username'])){
 			echo "Already signed in as " . $_COOKIE['username'];
+			header("Location: https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442k");
 			return;
 		}
 		$username = strval($_POST['log_user']);
@@ -96,6 +100,7 @@
 				echo "Now signed in as " . $username;
 				//LOGIN HERE
 				login_account($conn,$username,$password);
+				header("Location: https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442k");
 			} else {
 				echo "Password is incorrect.";
 			}
@@ -107,7 +112,7 @@
 	}
 	function login_account($conn,$username,$password){ //LOGIN FUNCTIONALITY
 		setcookie("username", $username, time()+(60*60), '/');
-		setcookie("password", $password, time()+(60*60), '/');
+		//setcookie("password", $password, time()+(60*60), '/');
 		$rand_num = rand();
 		$auth = password_hash($rand_num,PASSWORD_DEFAULT);
 		setcookie("auth", $auth, time()+(60*60), '/');
@@ -116,14 +121,16 @@
 		$stmt->execute();
 	}
 	
+	//DEPRECATED
+	/*
 	function signout($conn){
 		setcookie("username", "", time()-3600, '/');
 		setcookie("password", "", time()-3600, '/');
-		header('Refresh:0; Location: https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442k/loginsignuppage.php');
+		//header('Refresh:0; Location: https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442k/loginsignuppage.php');
 		echo "Signed out of account.";
-	}
+	}*/
 	
-	function verify_cookie($conn, $username, $password, $auth){
+	function verify_cookie($conn, $username, $auth){
 		$stmt = $conn->prepare("SELECT * FROM accounts WHERE username=?");
 		$stmt->bind_param("s", $username);
 		$stmt->execute();
@@ -131,10 +138,9 @@
 		if($result->num_rows > 0) {
 			while($row = $result->fetch_assoc()) {
 				$input_user = $row["username"];
-				$hash_pass = $row["password"];
 				$table_auth = $row["auth"];
 			}
-			if(password_verify(strval($password), strval($hash_pass)) AND $table_auth == $auth){
+			if($table_auth == $auth){
 				return true;
 			} else {
 				return false;
@@ -148,33 +154,67 @@
 	
 	$conn->close();
 	?>
-  <h4><b>LOGIN HERE</b></h4><br>
 
-  <form method="post">
-  Username: <input type="text" name="log_user">
-  <br><br>
-  Password: <input type="text" name="log_pass">
-  <br><br>
-    <input type="submit" name="login" class="button" value="Log-In" />
-  </form>
+<div class="bg-image"></div> <!-- Background image -->
 
-  <br><br>
+<div class="button-bar"> <!-- Button Bar -->
+	<div class="logo">
+		<img src="Front-end/images/logo.jpg" alt="Team Plant Logo">
+		<span>Team Plant</span>
+	</div>
+	<nav>
+	</nav>
 
-  <h4><b>SIGN-UP</b></h4><br>
-  
-  <form method="post">
-  New Username: <input type="text" name="new_user">
-  <br><br>
-  New Password: <input type="text" name="new_pass">
-  <br><br>
-    <input type="submit" name="signup" class="button" value="Sign-Up" />
-  </form>
-  
-   <form method="post">
-  <br><br>
-    <input type="submit" name="signout" class="button" value="Sign-Out" />
-  </form>
+	<div class="content">
+		<div class="textbox">
+			<h1>Login or Sign Up</h1>
+			<p>Create a new account or login to your existing account</p>
+		</div>
 
+		<div class="settings">
+			<div class="green-box">
+
+				<h2>Login</h2>
+				<form method="post">
+					
+					<div class="input-container">
+						<label>Username</label>
+						<input type="text" placeholder="Enter your username" name="log_user">
+					</div>
+					<div class="input-container">
+						<label>Password</label>
+						<input type="password" placeholder="Enter your password" name="log_pass">
+					</div>
+					<div class="input-container">
+						<button type="submit" class="save-button" name="login">Login</button>
+					</div>
+				</form>
+			</div>
+
+			<div class="green-box">
+
+				<h2>Create New Account</h2>
+				<form method="post">
+					
+					<div class="input-container">
+						<label>Create Username</label>
+						<input type="text" placeholder="Create your new username" name="new_user">
+					</div>
+					<div class="input-container">
+						<label>Create Password</label>
+						<input type="password" placeholder="Create your new password" name="new_pass">
+					</div>
+					<div class="input-container">
+						<button type="submit" class="save-button" name="signup">Sign Up</button>
+					</div>
+				</form>
+			</div>
+
+		</div>
+
+	</div>
+
+</div>
 
 </body>
 </html>
