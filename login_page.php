@@ -200,14 +200,14 @@
         <form method="post">
         <h2 class="work-sans-text">Create New Account</h2>
         <div class="setting">
-            <label for="username">Current Username:</label>
-            <input type="text" id="username" placeholder="Enter your current username" name="new_user">
+            <label for="username">New Username:</label>
+            <input type="text" id="username" placeholder="Enter your new username" name="new_user">
         </div>
         <div class="setting">
-            <label for="current-password">Current Password:</label>
-            <input type="password" id="current-password" placeholder="Enter your current password" name="new_pass">
+            <label for="current-password">New Password:</label>
+            <input type="password" id="current-password" placeholder="Enter your new password" name="new_pass">
         </div>
-        <button type="submit" class="green-button" name="signup">Change Password</button>
+        <button type="submit" class="green-button" name="signup">Sign Up</button>
       </form>
     </div>
         
