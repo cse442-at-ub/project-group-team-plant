@@ -29,11 +29,11 @@ body { /* body format */
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: rgba(185, 224, 162, 1);
-    padding: 15px 20px;
-    height: auto;
+    background-color: rgba(185, 224, 162, 1); /* Set the background color with transparency */
+    padding: 15px 20px; /* Adjust the padding (top and bottom) to make it taller */
+    height: auto; /* Remove the height property to allow the bar to grow with content */
     position: absolute;
-    top: 35px;
+    top: 35px; /* Adjust the top position to 100 pixels */
     left: 0;
     right: 0;
     z-index: 2;
@@ -85,9 +85,16 @@ nav a:hover {
     box-sizing: border-box;
   }
 
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .zip-code-form {
+        top: calc(100% + 40px); /* Adjust vertical position */
+    }
+}
+
 .text-boxes { /* text boxes above zip code box */
     position: absolute;
-    top: 200%;
+    top: 120px;
     left: 10%;
     z-index: 3;
   }
@@ -110,96 +117,88 @@ nav a:hover {
     color: #000000; /* Text color (black) */
   }
 
-.zip-code-box {
-    position: absolute;
-    align-items: center;
-    margin-top: 25px;
-    z-index: 3; /* Ensure the text box is on top of other elements */
+/* Responsive styles */
+@media (max-width: 768px) {
+    .content {
+        left: 10px; /* Adjust the left positioning for smaller screens */
+    }
+    .textbox {
+        padding: 10px;
+    }
+    .textbox h1 {
+        font-size: 36px;
+    }
+    .textbox p {
+        font-size: 20px;
+    }
 }
 
-.zip-code-box input[type="text"] {
-    padding: 17px;
-    border: none;
-    outline: none;
+.settings-box {
+    display: inline-block; /* Change to inline-block */
+    background-color: rgba(185, 224, 162, 1);
+    border-radius: 8px;
+    padding: 30px;
+    margin-left: 0px;
+    margin-top: 40px;
+    margin-right: 40px;
+    flex: 1;
+    width: 300px;
+    box-sizing: border-box; /* Include padding and border in the box sizing */
+    box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.2); /* Add a drop shadow effect */
+
+}
+
+.settings-box h2 {
     font-family: 'Work Sans', sans-serif;
-    font-size: 16px;
-    color: #000000;
-    width: 250px; /* Increase the width as needed */
-    box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.5); /* Add a drop shadow effect */
-    transition: box-shadow 0.3s; /* Add a smooth transition for the shadow */
-}
-
-.zip-code-box button {
-    padding: 17px 25px;
-    background-color: #b9e0a2; /* Green background color */
-    border: none;
-    outline: none;
-    cursor: pointer;
-    font-family: 'Work Sans', sans-serif;
-    font-size: 16px;
-    color: #ffffff; /* White text color */
-    margin-left: 10px; /* Add spacing between input and button */
-    box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.5); /* Add a drop shadow effect */
-    transition: box-shadow 0.3s; /* Add a smooth transition for the shadow */
-}
-
-.zip-code-box button:hover {
-    background-color: #81b662; /* Darker green on hover */
-}
-
-.feature-box-container {
-    position: absolute;
-    top: 0;
-    right: 0;
-    display: flex;
-    flex-direction: column; /* Stack elements vertically */
-    height: 100%; /* Ensure the feature boxes occupy the full height */
-    padding-right: 20px; /* Optional: Add some right padding for spacing */
-    margin-top: 110px;
-    z-index: 3;
-}
-
-.feature-box {
-    background-color: #b9e0a2;
-    color: #ffffff;
-    font-family: 'Work Sans', sans-serif;
-    padding: 20px;
-    border-radius: 10px;
-    margin-bottom: 20px;
-    width: 350px;
-    box-shadow: 3px 3px 6px rgba(82, 82, 82, 0.8);
-    transition: all 0.3s; /* Add a transition for all properties */
-}
-
-
-.feature-box:hover {
-    background-color: #81b662;
-    color: #ffffff;
-    box-shadow: 5px 5px 10px rgba(82, 82, 82, 1);
-    transform: translateY(-5px); /* Move the box 5px upward on hover */
-}
-
-.feature-box img {
-    vertical-align: middle;
-    width: 60px;
+    font-weight: bold;
+    font-size: 20px;
     margin-bottom: 10px;
 }
 
-/* Feature box headers */
-.feature-box h2 {
-    font-size: 24px; /* Adjust the header font size */
-    font-weight: 600;
-    margin: 0;
+.setting {
+    margin: 10px 0;
 }
 
-/* Feature box descriptions */
-.feature-box p {
-    font-size: 16px; /* Adjust the description font size */
+.setting label {
+    font-family: 'Work Sans', sans-serif;
+    display: block;
+    margin-bottom: 5px;
 }
 
-/* Media query to hide feature boxes on smaller screens */
-@media (max-width: 1150px) {
-    .feature-box {
-        display: none; /* Hide feature boxes on small screens */
-    }
+.setting input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    font-family: 'Work Sans', sans-serif;
+    margin-top: 5px;
+    box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.2); /* Add a drop shadow effect */
+}
+
+.green-button {
+    background-color: #45a049;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    margin-top: 5px;
+    font-family: 'Work Sans', sans-serif;
+    cursor: pointer;
+    width: 100%;
+    transition: background-color 0.3s; /* Add a transition for the background color */
+
+}
+
+/* Add a hover effect for the green button */
+.green-button:hover {
+    background-color: #358c3c; /* Change the background color on hover */
+}
+
+/* Hide input placeholders when focused */
+.setting input::placeholder {
+    transition: opacity 0.3s ease;
+}
+
+.setting input:focus::placeholder {
+    opacity: 0;
 }

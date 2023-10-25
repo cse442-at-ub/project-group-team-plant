@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Team Plant</title>
-    <link rel="stylesheet" type="text/css" href="Front-end/styles.css">
+    <link rel="stylesheet" type="text/css" href="Front-end/styles_settings.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;600&display=swap" rel="stylesheet">
 </head>
@@ -192,96 +192,83 @@
 		<ul>
 			<li><a href="https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442k/">Home</a></li>
 			<li><a href="">About</a></li>
-			<li><a href="">My Favorites</a></li>
-			<li><a href=""><b>Account</b></a></li>
+			<li><a href="https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442k/favorites_page.php">My Favorites</a></li>
+			<li><a href="https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442k/settings_page.php"><b>Account</b></a></li>
 		</ul>
 	</nav>
 
-	<div class="content">
-		<div class="textbox">
-			<h1>Account Settings</h1>
-			<p>Change your profile and account settings</p>
-		</div>
+    <div class="text-boxes"> <!-- Text boxes above zip code box -->
+            
+        <div class="text-box">
+          <p class="work-sans-text">Account Settings</p>
+        </div>
+        <div class="text-box">
+          <p class="source-sans-text">Change your profile and account settings.</p>
+        </div>
 
-		<div class="settings">
-			<div class="green-box">
+        <div class="settings-box">
+          <form method="post">
+          <h2 class="work-sans-text">Change Username</h2>
+          <div class="setting">
+              <label for="username">Current Username:</label>
+              <input type="text" id="username" placeholder="Enter your current username" name="current_user">
+          </div>
+          <div class="setting">
+              <label for="current-password">Current Password:</label>
+              <input type="password" id="current-password" placeholder="Enter your current password" name="current_pass">
+          </div>
+          <div class="setting">
+              <label for="new-password">New Username:</label>
+              <input type="password" id="new-password" placeholder="Enter your new username" name="new_user">
+          </div>
+          <button type=submit class="green-button" name="change_username">Change Username</button>
+        </form>
+      </div>
 
-				<h2>Change Username</h2>
-				<form method="post">
-					
-					<div class="input-container">
-						<label>Current Username</label>
-						<input type="text" placeholder="Enter your current username" name="current_user">
-					</div>
-					<div class="input-container">
-						<label>Current Password</label>
-						<input type="password" placeholder="Enter your current password" name="current_pass">
-					</div>
-					<div class="input-container">
-						<label>New Username</label>
-						<input type="text" placeholder="Enter your new username" name="new_user">
-					</div>
-					<div class="input-container">
-						<button type="submit" class="save-button" name="change_username">Change Username</button>
-					</div>
-				</form>
-			</div>
 
-			<div class="green-box">
+      <div class="settings-box">
+        <form method="post">
+        <h2 class="work-sans-text">Change Password</h2>
+        <div class="setting">
+            <label for="username">Current Username:</label>
+            <input type="text" id="username" placeholder="Enter your current username" name="current_user">
+        </div>
+        <div class="setting">
+            <label for="current-password">Current Password:</label>
+            <input type="password" id="current-password" placeholder="Enter your current password" name="current_pass">
+        </div>
+        <div class="setting">
+            <label for="new-password">New Password:</label>
+            <input type="password" id="new-password" placeholder="Enter your new password" name="new_pass">
+        </div>
+        <button type="submit" class="green-button" name="change_password">Change Password</button>
+      </form>
+    </div>
 
-				<h2>Change Password</h2>
-				<form method="post">
-					
-					<div class="input-container">
-						<label>Current Username</label>
-						<input type="text" placeholder="Enter your current username" name="current_user">
-					</div>
-					<div class="input-container">
-						<label>Current Password</label>
-						<input type="password" placeholder="Enter your current password" name="current_pass">
-					</div>
-					<div class="input-container">
-						<label>New Password</label>
-						<input type="password" placeholder="Enter your new password" name="new_pass">
-					</div>
-					<div class="input-container">
-						<button type="submit" class="save-button" name="change_password">Change Password</button>
-					</div>
-				</form>
-			</div>
 
-			<div class="green-box">
+      <div class="settings-box">
+        <form method="post">
+        <h2 class="work-sans-text">Change Zipcode</h2>
+        <div class="setting">
+            <label for="username">Enter Zipcode:</label>
+            <input type="text" id="username" placeholder="Enter your current zipcode" name="new_zip">
+        </div>
+        <button type="submit" class="green-button" name="set_zip" style="margin-top: 158px;">Set Zipcode</button>
+      </form>
+    </div>
 
-				<h2>Change Zipcode</h2>
-				<form method="post">
-					
-					<div class="input-container">
-						<label>Enter ZIP Code</label>
-						<input type="text" placeholder="Enter your current ZIP code" name="new_zip">
-					</div>
-					<div class="input-container">
-						<button type="submit" class="save-button" name="set_zip">Set ZIP Code</button>
-					</div>
-				</form>
-				
-			</div>
-
-			<div class="green-box">
-
-				<h2>Sign Out Here</h2>
-				<form method="post">
-					
-					<div class="input-container">
-						<button type="submit" class="save-button" name="sign_out">Sign Out</button>
-					</div>
-				</form>
-			</div>
-
-		</div>
-
-	</div>
+    
+    <div class="settings-box">
+      <form method="post">
+      <h2 class="work-sans-text" style="margin-bottom: 236px;">Sign Out</h2>
+      <button type="submit" class="green-button" name="sign_out">Sign Out</button>
+    </form>
+  </div>
+        
+    </div>
 
 </div>
+
 
 </body>
 </html>
