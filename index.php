@@ -52,6 +52,22 @@
         exit();
     }
 	
+    //check if zipcode is set, if so set input
+    $stmt = $conn->prepare("SELECT * FROM accounts WHERE username=?");
+	$stmt->bind_param("s", $_COOKIE['username']);
+	$stmt->execute();
+	$result = $stmt->get_result();
+    if($result->num_rows > 0) {
+        while($row = $result->fetch_assoc()) {
+            $saved_zip = $row["zipcode"];
+        }
+    }
+    if($saved_zip != null){
+        $zip = $saved_zip;
+    }else{
+        $zip = "";
+    }
+    $stmt->close();
 	$conn->close();
 	?>
 
@@ -66,7 +82,7 @@
             <ul>
                 <li><a href="https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442k"><b>Home</b></a></li>
                 <li><a href="#">About</a></li>
-                <li><a href="#">My Favorites</a></li>
+                <li><a href="https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442k/favorites_page.php">My Favorites</a></li>
                 <li><a href="https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442k/settings_page.php">Account</a></li>
             </ul>
         </nav>
@@ -79,9 +95,9 @@
             <div class="text-box">
               <p class="source-sans-text">Discover the perfect plants tailored to your location with <br>our personalized plant recommendation tool.</p>
 
-              <form method="post">  <!-- Enter zip code box with post form -->
+              <form action="https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442k/results_page.php" method="post">  <!-- Enter zip code box with post form -->
                 <div class="zip-code-box">
-                    <input type="text" id="zip-code-input" placeholder="Enter Zip Code" class="work-sans-text" name="zip" value="">
+                    <input type="text" id="zip-code-input" placeholder="Enter Zip Code" class="work-sans-text" name="zip" value=<?php echo $zip; ?>>
                     <button type="submit" name="recommend_button" class="button work-sans-text">GO!</button>
                     
                 </div>
