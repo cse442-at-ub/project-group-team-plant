@@ -1,3 +1,8 @@
+<?php
+//Start session
+session_start();
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -58,14 +63,15 @@
         header("Location: login_page.php");
         exit();
     }
-	
-	$conn->close();
+
 
   if (!function_exists('str_contains')) {
     function str_contains($haystack, $needle) {
       return $needle !== '' && mb_strpos($haystack, $needle) !== false;
     }
   }
+
+
   $ret = array();
   $numOfPlants = 0;
   $printPlants = array();
@@ -79,16 +85,26 @@
 
 
   if(array_key_exists("recommend_button", $_POST)) {
+    $_POST['zip'] = htmlspecialchars($_POST['zip']);
     $text = zip_search();
   }
-  $fips = "";
-  $state_id = "";
+  if(array_key_exists("next_page", $_POST)) {
+    $_SESSION['page']++;
+    $text = display_table($_SESSION['page']);
+  }
+  if(array_key_exists("prev_page", $_POST)) {
+    $_SESSION['page']--;
+    $text = display_table($_SESSION['page']);
+  }
+
   function zip_search(){ 
+      $fips = "";
+      $state_id = "";
+      $zip = strval($_POST['zip']);
       $plants = array(); //COMMON NAME
       $latin = array(); //SCIENTIFIC NAME
       $symbol = array(); //SYMBOL
       $habit = array(); //GROWTH HABIT
-      $zip = strval($_POST['zip']);
       $text = "Results for";
       if (($zip_search = fopen("data/uszips.csv", "r")) !== FALSE) { //FIND FIPS & STATE FROM ZIP
         while (($csv = fgetcsv($zip_search, 100000, ",")) !== FALSE) {
@@ -119,6 +135,19 @@
       }
     }
   fclose($plant_search);
+  //FIGURE OUT PAGE
+  $page = 1;
+
+  $min = ($page - 1) * 10;
+  $max = $min + 10;
+
+  $t_list = array(); //table list
+  $j = 0; //$j t_list count / $i symbol count
+  for($i = $min; $i <= $max; $i++){
+    $t_list[$j] = $symbol[$i];
+    $j++;
+  }
+
   //print("PLANT");
   }else{ //INVALID ZIPCODE (WRONG ZIP/STATE)
           $text = "The zipcode ". $zip ." was invalid";
@@ -282,9 +311,44 @@
         return $text;
       }
       $text = "Results for ". $zip;
-      ?>
-      <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
-      <div class="table-container">
+      $_SESSION['plants'] = $printPlants;
+      $_SESSION['latin'] = $printLatin;
+      $_SESSION['habit'] = $printHabit;
+      $_SESSION['rarity'] = $rarity;
+      $_SESSION['invasive'] = $invasive;
+      $_SESSION['filter'] = $filter;
+      $_SESSION['symbol'] = $printSymbol;
+      $_SESSION['zip'] = $zip;
+      $_SESSION['page'] = 1;
+      display_table(1);
+      $text = "Results for ". $zip;
+      return $text;
+}
+
+
+function display_table($page){
+  if($page < 1){
+    $_SESSION['page'] = 1;
+    $page = 1;
+  }
+  $f_size = sizeof($_SESSION['filter']);
+  $max_page = ceil($f_size/10);
+  if($page > $max_page){
+    $_SESSION['page'] = $max_page;
+    $page = $max_page;
+  }
+  $zip = $_SESSION['zip'];
+  $text = "Results for ". $zip;
+  $plants = $_SESSION['plants'];
+  $latin = $_SESSION['latin'];
+  $habit = $_SESSION['habit'];
+  $rarity = $_SESSION['rarity'];
+  $invasive = $_SESSION['invasive'];
+  $filter = $_SESSION['filter'];
+  $symbol = $_SESSION['symbol'];
+  ?>
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+<div class="table-container">
     <table class="styled-table">
         <tr class="header-row">
             <td class="multi-line">Common Name</td>
@@ -296,18 +360,24 @@
             <td class="multi-line">Fact Sheet</td>
             <td class="multi-line">Favorite</td>
         </tr>
-        <?php $count = 0; 
+        <?php 
+        $count = 0;
+        $min = ($page - 1) * 10; 
+        $max = $min + 10;
         foreach($filter as $i) : 
         $count++;
-        if($count == 20){
+        if($count <= $min || $count > $max){
+          continue;
+        }
+        if($count > $max){
           break;
         }?>
-        <?php $pgLink = "https://plants.usda.gov/DocumentLibrary/plantguide/pdf/pg_" . $printSymbol[$i] . ".pdf"; ?>
-        <?php $fsLink = "https://plants.usda.gov/DocumentLibrary/factsheet/pdf/fs_" . $printSymbol[$i] . ".pdf"; ?>
+        <?php $pgLink = "https://plants.usda.gov/DocumentLibrary/plantguide/pdf/pg_" . $symbol[$i] . ".pdf"; ?>
+        <?php $fsLink = "https://plants.usda.gov/DocumentLibrary/factsheet/pdf/fs_" . $symbol[$i] . ".pdf"; ?>
         <tr class="<?php echo $i % 2 === 0 ? 'even-row' : 'odd-row'; ?>">
-            <td class="multi-line"><?php echo "$printPlants[$i] <br>";?></td>
-            <td class="multi-line"><?php echo "$printLatin[$i] <br>";?></td>
-            <td class="multi-line"><?php echo "$printHabit[$i] <br>";?></td>
+            <td class="multi-line"><?php echo "$plants[$i] <br>";?></td>
+            <td class="multi-line"><?php echo "$latin[$i] <br>";?></td>
+            <td class="multi-line"><?php echo "$habit[$i] <br>";?></td>
             <td class="multi-line"><?php echo "$rarity[$i] <br>";?></td>
             <td class="multi-line"><?php echo "$invasive[$i] <br>";?></td>
             <?php if (in_array("Content-Type: application/pdf", get_headers($pgLink))) { ?>
@@ -320,16 +390,52 @@
             <?php }else{ ?>
               <td class="multi-line"><?php echo "Link Unavailable"; ?></td>
             <?php } ?>
-            <td><input type="image" src="Front-end/images/heart.png" alt="Favorite" class="heart-button"/></td>
+              <td><form method="post"> <input type="submit" name="favorite" value="favorite" /></form></td>
         </tr>
         <?php endforeach; ?>
     </table>
 </div>
+          <?php if($page > 1){ ?>
+          <form method="post">
+            <button type="submit" style="margin-left: 10px" name="prev_page" class="button work-sans-text"><</button>
+          </form>
+          <?php } ?>
+          <p class="source-sans-text"><?php echo "Page " . $page; ?></p>
 
+          <?php if($page < $max_page){ ?>
+          <form method="post">
+            <button type="submit" style="margin-left: 50px" name="next_page" class="button work-sans-text">></button>
+          </form>
+          <?php } ?>
 
-      <?php
-      return $text;
+  <?php
+  return $text;
 }
+
+if(array_key_exists("favorite", $_POST)){
+  $temp=$_POST['name'];
+  echo $temp;
+  //addFavorite($conn);
+}
+function addFavorite($conn){
+  //add second in param for row data
+  //work this after i have that
+  /*
+  $user = $_COOKIE['username'];
+  $stmt = $conn->prepare("SELECT * FROM favorites WHERE username=$user");
+  $stmt->execute();
+	$result = $stmt->get_result();
+  if($result->num_rows == 0){
+    //user has no favorites so insert
+    //return
+  }else{
+    //iterate and look for duplicate
+    //return if dup found
+  }
+  //insert as no dup found
+  */
+}
+$conn->close();
 ?>
 
 <div class="button-bar"> <!-- Button Bar -->
@@ -341,8 +447,8 @@
 		<ul>
 			<li><a href="https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442k/">Home</a></li>
 			<li><a href="">About</a></li>
-			<li><a href="">My Favorites</a></li>
-			<li><a href="">Account</a></li>
+			<li><a href="https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442k/favorites_page.php">My Favorites</a></li>
+			<li><a href="https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442k/settings_page.php">Account</a></li>
 		</ul>
 	</nav>
 
