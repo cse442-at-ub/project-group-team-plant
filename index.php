@@ -63,9 +63,9 @@
         }
     }
     if($saved_zip != null){
-        $zip = $saved_zip;
+        $zip = htmlspecialchars($saved_zip, ENT_QUOTES, 'UTF-8');
     }else{
-        $zip = "";
+        $zip = htmlspecialchars($saved_zip, ENT_QUOTES, 'UTF-8');
     }
     $stmt->close();
 	$conn->close();
