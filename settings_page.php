@@ -52,33 +52,62 @@
 	}
 
   function change_username($conn){
-    $username = strval($_POST['current_user']);
-	$password = strval($_POST['current_pass']);
-    $newusername = strval($_POST['new_user']);
+	$username = htmlspecialchars(strval($_POST['current_user']), ENT_QUOTES, 'UTF-8');
+	$password = htmlspecialchars(strval($_POST['current_pass']), ENT_QUOTES, 'UTF-8');
+	$newusername = htmlspecialchars(strval($_POST['new_user']), ENT_QUOTES, 'UTF-8');
 
+
+	if($username != $_COOKIE['username']){
+		echo "Username or password is not correct.";
+		return;
+	}
     if ($newusername == ""){
-			echo "Invalid input, please enter a different username.";
+			echo "Invalid input, please enter a different password.";
 			return;
     }
-
-    if ($newusername == $username){
-  		echo "Invalid input, please enter a different username.";
-  		return;
-    }
-
-    $stmt = $conn->prepare("UPDATE accounts SET username=? WHERE username=?");
-		$stmt->bind_param("ss", $newusername, $username);
-		$stmt->execute();
-    $stmt->close();
-    login_account($conn, $newusername, $password);
+	
+	$stmt = $conn->prepare("SELECT * FROM accounts WHERE username=?");
+	$stmt->bind_param("s", $username);
+	$stmt->execute();
+	$result = $stmt->get_result();
+	$stmt->close();
+	if($result->num_rows > 0) {
+		while($row = $result->fetch_assoc()) {
+			$t_username = $row["username"];
+			$hash_pass = $row["password"];
+			//$table_auth = $row["auth"];
+		}
+		if(password_verify(strval($password), strval($hash_pass)) && $t_username == $username){
+			//CORRECT PASSWORD
+			$stmt = $conn->prepare("UPDATE accounts SET username=? WHERE username=?");
+			$stmt->bind_param("ss", $newusername, $username);
+			$stmt->execute();
+			$stmt->close();
+			login_account($conn, $newusername, $password);
+		} 
+		if($t_username == $username){
+			echo "Username already taken";
+			return;
+		}
+		else {
+			echo "Username or password is not correct.";
+		}
+	} else {
+		echo "Username or password is not correct.";
+	}
     //header('Location: https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442k//accsettingspage.php');
   }
 
   function change_password($conn){
-    $username = strval($_POST['current_user']);
-	$password = strval($_POST['current_pass']);
-    $newpassword = strval($_POST['new_pass']);
+	$username = htmlspecialchars(strval($_POST['current_user']), ENT_QUOTES, 'UTF-8');
+	$password = htmlspecialchars(strval($_POST['current_pass']), ENT_QUOTES, 'UTF-8');
+	$newpassword = htmlspecialchars(strval($_POST['new_pass']), ENT_QUOTES, 'UTF-8');
 
+
+	if($username != $_COOKIE['username']){
+		echo "Username or password is not correct.";
+		return;
+	}
     if ($newpassword == ""){
 			echo "Invalid input, please enter a different password.";
 			return;
@@ -91,11 +120,11 @@
 	$stmt->close();
 	if($result->num_rows > 0) {
 		while($row = $result->fetch_assoc()) {
-			$username = $row["username"];
+			$t_username = $row["username"];
 			$hash_pass = $row["password"];
 			//$table_auth = $row["auth"];
 		}
-		if(password_verify(strval($password), strval($hash_pass))){
+		if(password_verify(strval($password), strval($hash_pass)) && $t_username == $username){
 			//CORRECT PASSWORD
 			$hashedpassword = strval(password_hash($newpassword, PASSWORD_DEFAULT));
 			$stmt = $conn->prepare("UPDATE accounts SET password=? WHERE username=?");
@@ -104,16 +133,16 @@
 			$stmt->close();
 			login_account($conn, $username, $newpassword);
 		} else {
-			echo "Password is incorrect.";
+			echo "Username or password is not correct.";
 		}
 	} else {
-		echo "Username not found.";
+		echo "Username or password is not correct.";
 	}
     //header('Refresh:0; Location: https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442k//accsettingspage.php');
   }
 
   function set_zip($conn){
-    $zipcode = strval($_POST['new_zip']);
+	$zipcode = htmlspecialchars(strval($_POST['new_zip']), ENT_QUOTES, 'UTF-8');
 	if(isset($_COOKIE['username'])){
 		if(verify_cookie($conn, $_COOKIE['username'], $_COOKIE['auth'])){
 			//LOGGED IN
@@ -127,7 +156,6 @@
 			$stmt->bind_param("ss", $zipcode, $username);
 			$stmt->execute();
 			$stmt->close();
-			login_account($conn, $username, $password);
 			echo "Zipcode " . $zipcode . " saved.";
 		}
 	}else{

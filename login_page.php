@@ -47,8 +47,8 @@
 			header("Location: https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442k");
 			return;
 		}
-		$username = strval($_POST['new_user']);
-		$password = strval($_POST['new_pass']);
+		$username = htmlspecialchars(strval($_POST['new_user']), ENT_QUOTES, 'UTF-8');
+		$password = htmlspecialchars(strval($_POST['new_pass']), ENT_QUOTES, 'UTF-8');
 		//header('Refresh:0; Location: https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442k/loginsignuppage.php');
 		if ($username == ""){
 			echo "A valid username was not entered.";
@@ -84,8 +84,8 @@
 			header("Location: https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442k");
 			return;
 		}
-		$username = strval($_POST['log_user']);
-		$password = strval($_POST['log_pass']);
+		$username = htmlspecialchars(strval($_POST['log_user']), ENT_QUOTES, 'UTF-8');
+		$password = htmlspecialchars(strval($_POST['log_pass']), ENT_QUOTES, 'UTF-8');
 		//header('Refresh:0; Location: https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442k/loginsignuppage.php');
 		$stmt = $conn->prepare("SELECT * FROM accounts WHERE username=?");
 		$stmt->bind_param("s", $username);

@@ -14,15 +14,16 @@ session_start();
     <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;600&display=swap" rel="stylesheet">
 </head>
 <body>
-  <script>
-    function showFilters() {
-      if(document.getElementById("hiddenselect").style.display === "none"){
-        document.getElementById('hiddenselect').style.display = "block";
-      } else {
-        document.getElementById('hiddenselect').style.display = "none";
-      }
-    }
-  </script>
+      <script>
+        function toggleFilters() {
+            var hiddenselect = document.getElementById('hiddenselect');
+            if (hiddenselect.style.display === "none" || hiddenselect.style.display === "") {
+                hiddenselect.style.display = "block";
+            } else {
+                hiddenselect.style.display = "none";
+            }
+        }
+    </script>
   <?php
   $server = "oceanus.cse.buffalo.edu";
 	$user = "sepalutr";
@@ -100,7 +101,7 @@ session_start();
   function zip_search(){ 
       $fips = "";
       $state_id = "";
-      $zip = strval($_POST['zip']);
+      $zip = htmlspecialchars(strval($_POST['zip']), ENT_QUOTES, 'UTF-8');
       $plants = array(); //COMMON NAME
       $latin = array(); //SCIENTIFIC NAME
       $symbol = array(); //SYMBOL
@@ -154,7 +155,7 @@ session_start();
           return $text;
   }
   if(count($plants) == 0){ //NO RESULTS
-    $text = "No Results for ". $zip;
+    $text = "No results for ". $zip;
     return $text;
   }
       if (($growth_search = fopen("data/growth_habit.csv", "r")) !== FALSE) { //FIND GROWTH HABIT OF PLANTS
@@ -307,10 +308,10 @@ session_start();
       }
 
       if(count($filter) == 0){ //NO RESULTS
-        $text = "No Results for ". $zip;
+        $text = "No results for ". $zip;
         return $text;
       }
-      $text = "Results for ". $zip;
+      $text = "Results for " . $zip . ":";
       $_SESSION['plants'] = $printPlants;
       $_SESSION['latin'] = $printLatin;
       $_SESSION['habit'] = $printHabit;
@@ -321,7 +322,7 @@ session_start();
       $_SESSION['zip'] = $zip;
       $_SESSION['page'] = 1;
       display_table(1);
-      $text = "Results for ". $zip;
+      $text = "Results for " . $zip . ":";
       return $text;
 }
 
@@ -338,7 +339,7 @@ function display_table($page){
     $page = $max_page;
   }
   $zip = $_SESSION['zip'];
-  $text = "Results for ". $zip;
+  $text = "Results for " . $zip . ":";
   $plants = $_SESSION['plants'];
   $latin = $_SESSION['latin'];
   $habit = $_SESSION['habit'];
@@ -374,7 +375,7 @@ function display_table($page){
         }?>
         <?php $pgLink = "https://plants.usda.gov/DocumentLibrary/plantguide/pdf/pg_" . $symbol[$i] . ".pdf"; ?>
         <?php $fsLink = "https://plants.usda.gov/DocumentLibrary/factsheet/pdf/fs_" . $symbol[$i] . ".pdf"; ?>
-        <tr class="<?php echo $i % 2 === 0 ? 'even-row' : 'odd-row'; ?>">
+        <tr>
             <td class="multi-line"><?php echo "$plants[$i] <br>";?></td>
             <td class="multi-line"><?php echo "$latin[$i] <br>";?></td>
             <td class="multi-line"><?php echo "$habit[$i] <br>";?></td>
@@ -390,23 +391,34 @@ function display_table($page){
             <?php }else{ ?>
               <td class="multi-line"><?php echo "Link Unavailable"; ?></td>
             <?php } ?>
-              <td><form method="post"> <input type="submit" name="favorite" value="favorite" /></form></td>
+              <!-- <td><form method="post"> <input type="submit" name="favorite" value="favorite" /></form></td> -->
+              <td><form method="post"> <input type="image" name="favorite" src="Front-end/images/heart.png" class="heart-button"/></form></td>
         </tr>
         <?php endforeach; ?>
     </table>
-</div>
-          <?php if($page > 1){ ?>
-          <form method="post">
-            <button type="submit" style="margin-left: 10px" name="prev_page" class="button work-sans-text"><</button>
-          </form>
-          <?php } ?>
-          <p class="source-sans-text"><?php echo "Page " . $page; ?></p>
+    <br><br>
+            <div style="display: flex; align-items: center; justify-content: center;">
+                        <?php if($page > 1){ ?>
+            <form method="post">
+                <button type="submit" name="prev_page" class="button work-sans-text square-button">&lt;</button>
+            </form>
+            <?php } else { ?>
+            <div class="button non-clickable-button"></div>
+            <?php } ?>
 
-          <?php if($page < $max_page){ ?>
-          <form method="post">
-            <button type="submit" style="margin-left: 50px" name="next_page" class="button work-sans-text">></button>
-          </form>
-          <?php } ?>
+            <p class="source-sans-text" style="text-align: center; padding-left: 20px; padding-right: 20px;">Page <?php echo $page; ?></p>
+
+            <?php if($page < $max_page){ ?>
+            <form method="post">
+                <button type="submit" name="next_page" class="button work-sans-text square-button">&gt;</button>
+            </form>
+            <?php } else { ?>
+            <div class="button non-clickable-button"></div>
+            <?php } ?>
+
+      </div>
+    <br><br>
+    </div>
 
   <?php
   return $text;
@@ -460,47 +472,58 @@ $conn->close();
         <div class="text-box">
           <p class="source-sans-text">A collection of plants hand-tailored to your exact location.</p>
         </div>
-        <button type="button" id="filters" style="background-color: #000000; padding: 10px 20px; color: white" class="button" onclick="showFilters()">Filters</button>
         <form method="post" class="zip-code-box">
-            <input type="text" id="zip-code-box-input" placeholder="Enter Zip Code" class="work-sans-text" name="zip" value="">
-            
-            <div id="hiddenselect" style="display:none;">
-            <h1 style="font-size: 15px;">
-            <label for="habit">Growth habit filter:</label>
-            <select name="habit" id="habit">
-            <option value="None">None</option>
-            <option value="Forb/herb">Forb/herb</option>
-            <option value="Graminoid">Graminoid</option>
-            <option value="Lichenous">Lichenous</option>
-            <option value="Nonvascular">Nonvascular</option>
-            <option value="Shrub">Shrub</option>
-            <option value="Subshrub">Subshrub</option>
-            <option value="Tree">Tree</option>
-            <option value="Vine">Vine</option>
-            </select>
-            <br>
-            <label for="rarity">Rarity filter:</label>
-            <select name="rarity" id="rarity">
-            <option value="None">None</option>
-            <option value="Endangered">Endangered</option>
-            <option value="Threatened">Threatened</option>
-            </select>
-            <br>
-            <label for="invasive">Invasive filter:</label>
-            <select name="invasive" id="invasive">
-            <option value="None">None</option>
-            <option value="Invasive">Invasive</option>
-            <option value="Potentially Invasive">Potentially Invasive</option>
-            </select>
-            </h1>
-            </div>
+  <input type="text" id="zip-code-box-input" placeholder="Enter Zip Code" class="work-sans-text" name="zip" value="">
+  
+  <div id="hiddenselect" style="display: none; position: absolute; background-color: #82ac69; z-index: 1; top: 100%; width: 131px; left: 263px; font-family: 'Work Sans', sans-serif; border-radius: 5px; margin-top: 13px" class="select-with-shadow">
+    <h1 style="font-size: 14px; padding: 10px; box-sizing: border-box;">
+      <label for="habit" style="color: white">Growth Habit:</label>
+      <select name="habit" id="habit" class="select-with-shadow" style="width: 100%; margin-top: 5px; margin-bottom: 10px; font-family: 'Work Sans', sans-serif;">
+        <option style=""value="None">No Selection</option>
+        <option value="Forb/herb">Forb/herb</option>
+        <option value="Graminoid">Graminoid</option>
+        <option value="Lichenous">Lichenous</option>
+        <option value="Nonvascular">Nonvascular</option>
+        <option value="Shrub">Shrub</option>
+        <option value="Subshrub">Subshrub</option>
+        <option value="Tree">Tree</option>
+        <option value="Vine">Vine</option>
+      </select>
+      <br>
+      <label for="rarity" style="color: white">Rarity:</label>
+      <select name="rarity" id="rarity" class="select-with-shadow" style="width: 100%; margin-top: 5px; margin-bottom: 10px; font-family: 'Work Sans', sans-serif;">
+        <option value="None">No Selection</option>
+        <option value="Endangered">Endangered</option>
+        <option value="Threatened">Threatened</option>
+      </select>
+      <br>
+      <label for="invasive" style="color: white">Invasiveness:</label>
+      <select name="invasive" class="select-with-shadow" id="invasive" style="width: 100%; margin-top: 5px; margin-bottom: 5px; font-family: 'Work Sans', sans-serif;">
+        <option value="None">No Selection</option>
+        <option value="Invasive">Invasive</option>
+        <option value="Potentially Invasive">Potentially</option>
+      </select>
+    </h1>
+  </div>
+<style>
+  /* Define a new style for the hover effect */
+  #filters:hover {
+    background-color: #333333; /* Dark gray color */
+  }
+</style>
 
-            <button type="submit" style="margin-left: 10px" name="recommend_button" class="button work-sans-text">GO!</button>
+<button type="button" id="filters" style="background-color: #000000; padding: 17px 40px" class="button work-sans-text" onclick="toggleFilters()" onmouseover="this.style.backgroundColor='#82ac69'" onmouseout="this.style.backgroundColor='#000000'">Filters</button>
 
-        </form>
+  <button type="submit" style="margin-left: 10px" name="recommend_button" class="button work-sans-text">GO!</button>
+</form>
+
+        <div class="text-box" style="margin-top: 110px">
+          <p class="source-sans-text">Before clicking "GO!", enter your zip code and select the filters you would like to apply!</p>
+        </div>
+
         <div class="text-box">
-        <br><br><br><br><br><br>
-          <p class="work-sans-text"><?php echo $text; ?></p>
+        <br>
+          <p class="work-sans-text" style="font-size: 44px; margin-bottom: 10px; font-weight: bold"><?php echo $text; ?></p>
         </div>
         </div>
         
