@@ -365,6 +365,7 @@ function display_table($page){
         $count = 0;
         $min = ($page - 1) * 10; 
         $max = $min + 10;
+        $button_count = 0;
         foreach($filter as $i) : 
         $count++;
         if($count <= $min || $count > $max){
@@ -372,7 +373,8 @@ function display_table($page){
         }
         if($count > $max){
           break;
-        }?>
+        }        
+        ?>
         <?php $pgLink = "https://plants.usda.gov/DocumentLibrary/plantguide/pdf/pg_" . $symbol[$i] . ".pdf"; ?>
         <?php $fsLink = "https://plants.usda.gov/DocumentLibrary/factsheet/pdf/fs_" . $symbol[$i] . ".pdf"; ?>
         <tr>
@@ -391,9 +393,11 @@ function display_table($page){
             <?php }else{ ?>
               <td class="multi-line"><?php echo "Link Unavailable"; ?></td>
             <?php } ?>
-              <!-- <td><form method="post"> <input type="submit" name="favorite" value="favorite" /></form></td> -->
-              <td><form method="post"> <input type="image" name="favorite" src="Front-end/images/heart.png" class="heart-button"/></form></td>
-        </tr>
+              <td><form method="post">
+                <input type="submit" name="favorite" value="<?php echo $button_count ?>">	      
+                </form></td>	   
+          </tr>
+	<?php $button_count++; ?>	
         <?php endforeach; ?>
     </table>
     <br><br>
@@ -424,28 +428,71 @@ function display_table($page){
   return $text;
 }
 
+
+$cBut = 0;
+
 if(array_key_exists("favorite", $_POST)){
-  $temp=$_POST['name'];
-  echo $temp;
-  //addFavorite($conn);
+  $cBut = intval($_POST['favorite']);
+  addFavorite($conn, $cBut);
 }
-function addFavorite($conn){
-  //add second in param for row data
-  //work this after i have that
-  /*
-  $user = $_COOKIE['username'];
-  $stmt = $conn->prepare("SELECT * FROM favorites WHERE username=$user");
-  $stmt->execute();
-	$result = $stmt->get_result();
-  if($result->num_rows == 0){
-    //user has no favorites so insert
-    //return
-  }else{
-    //iterate and look for duplicate
-    //return if dup found
-  }
-  //insert as no dup found
-  */
+function addFavorite($conn, $cBut){
+  //re-declared these here to resolve scoping error
+    $commonName = array();
+    $latinName = array();
+    $gHabit = array();
+    $rarity = array();
+    $invasive = array();
+    $pGuide = "";
+    $fSheet = "";
+    $symbol = array();
+    //end
+    $user = $_COOKIE['username'];
+    $stmt = $conn->prepare("SELECT * FROM favorites WHERE username=?");
+    $stmt->bind_param("s", $user);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    if($result->num_rows == 0){
+        $stmt->close();
+        $stmt = $conn->prepare("INSERT INTO favorites (username, common_name, scientific_name, growth_habit, rarity, invasive, plant_guide, fact_sheet, symbol) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt->bind_param("sssssssss", $user, $commonName, $latinName, $gHabit, $rarity, $invasive, $pGuide, $fSheet, $symbol);
+        $user = $_COOKIE['username'];
+        $commonName = $_SESSION['plants'][$cBut];
+        $latinName = $_SESSION['latin'][$cBut];
+        $gHabit = $_SESSION['habit'][$cBut];
+        $rarity = $_SESSION['rarity'][$cBut];
+        $invasive = $_SESSION['invasive'][$cBut];
+        $pGuide = "none";
+        $fSheet = "none";
+        $symbol = $_SESSION['symbol'][$cBut];
+        $stmt->execute();
+        echo "favorite added";
+        $stmt->close();
+        return;
+    }else{
+        while($row = $result->fetch_assoc()) {
+            if($row["symbol"] == $_SESSION["symbol"][$cBut]){
+                echo "Already a favorite!";
+                $stmt->close();
+                return;
+            }
+        }
+        $stmt->close();
+        $stmt = $conn->prepare("INSERT INTO favorites (username, common_name, scientific_name, growth_habit, rarity, invasive, plant_guide, fact_sheet, symbol) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt->bind_param("sssssssss", $user, $commonName, $latinName, $gHabit, $rarity, $invasive, $pGuide, $fSheet, $symbol);
+        $user = $_COOKIE['username'];
+        $commonName = $_SESSION['plants'][$cBut];
+        $latinName = $_SESSION['latin'][$cBut];
+        $gHabit = $_SESSION['habit'][$cBut];
+        $rarity = $_SESSION['rarity'][$cBut];
+        $invasive = $_SESSION['invasive'][$cBut];
+        $pGuide = "none";
+        $fSheet = "none";
+        $symbol = $_SESSION['symbol'][$cBut];
+        $stmt->execute();
+        echo "favorite added";
+        $stmt->close();
+        return;
+    }
 }
 $conn->close();
 ?>
