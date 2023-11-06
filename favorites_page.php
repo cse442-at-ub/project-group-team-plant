@@ -67,15 +67,13 @@
   $stmt->execute();
   $result = $stmt->get_result();
   if($result->num_rows > 0) {
-        $counter = 0;
 		while($row = mysqli_fetch_array($result)) {
-            $plants[$counter] = $row['common_name'];
-            $latin[$counter] = $row['scientific_name'];
-            $habit[$counter] = $row['growth_habit'];
-            $rarity[$counter] = $row['rarity'];
-            $invasive[$counter] = $row['invasive'];
-            $symbol[$counter] = $row['symbol'];
-            $counter++;
+            $plants[] = $row['common_name'];
+            $latin[] = $row['scientific_name'];
+            $habit[] = $row['growth_habit'];
+            $rarity[] = $row['rarity'];
+            $invasive[] = $row['invasive'];
+            $symbol[] = $row['symbol'];
 		}
     }else{
       echo "no favorites found";
@@ -86,47 +84,53 @@
    $length = count($plants);
 
 
+$similarPlants = array();
+$images = array();
+
+$curHabit = $habit[0];
 
 
-
-  function get_similar(){
-
-    //NEW ARRAY TO STORE GROWTH HABIT OF CURRENT FAVORITES
-    $currentHabits = array();
-
-    $curHabit = $habit[0];
-
-    //NEW ARRAY TO STORE SIMILAR PLANTS
-    $tempSimilarPlants = array();
-
-    //ARRAY TO STORE PICTURE LINKS
-    $pictures = array();
-
-    //GET SIMILAR PLANTS
-    $newCount = 0;
-    if (($growth_search = fopen("data/growth_habit.csv", "r")) !== FALSE) { //FIND GROWTH HABIT OF PLANTS
-      while (($g_csv = fgetcsv($growth_search, 100000, ",")) !== FALSE) {
-                  if($g_csv[4] == $curHabit){ //SYMBOL MATCH
-                      $tempSimilarPlants[$newCount] = $g_csv[2];
-                      $newLink = "https://plants.sc.egov.usda.gov/ImageLibrary/original/" . $g_csv[0] . "_001_php.jpg";
-                      $pictures[$newCount] = $newLink;
-                      $newCount++;
-                  }
-            }
-    fclose($growth_search);
+for ($x = 0; $x < count($habit); $x++) {
+    if ($habit[$x] == "Forb/herb"){
+        $curHabit = $habit[$x];
     }
+    if ($habit[$x] == "Graminoid"){
+        $curHabit = $habit[$x];
+    }
+    if ($habit[$x] == "Tree"){
+        $curHabit = $habit[$x];
+    }
+    if ($habit[$x] == "Nonvascular"){
+        $curHabit = $habit[$x];
+    }
+    if ($habit[$x] == "Lichenous"){
+        $curHabit = $habit[$x];
+    }
+    if ($habit[$x] == "Vine"){
+        $curHabit = $habit[$x];
+    }
+    if ($habit[$x] == "Shrub"){
+        $curHabit = $habit[$x];
+    }
+    if ($habit[$x] == "Subshrub"){
+        $curHabit = $habit[$x];
+    }
+}
 
-    //CHOOSE 4 PLANTS FROM SIMILAR ARRAY AND APPEND NAMES + PICTURES
-    $similarPlants[0] = $tempSimilarPlants[0];
-    $similarPlants[1] = $tempSimilarPlants[1];
-    $similarPlants[2] = $tempSimilarPlants[2];
-    $similarPlants[3] = $tempSimilarPlants[3];
-    $images[0] = $pictures[0];
-    $images[1] = $pictures[1];
-    $images[2] = $pictures[2];
-    $images[3] = $pictures[3];
+//GET SIMILAR PLANTS
+if (($growth_search = fopen("data/growth_habit.csv", "r")) !== FALSE) { //FIND GROWTH HABIT OF PLANTS
+    while (($g_csv = fgetcsv($growth_search, 100000, ",")) !== FALSE) {
+                if($g_csv[4] == $curHabit){ //SYMBOL MATCH
+                    $similarPlants[] = $g_csv[2];
+                    $newLink = "https://plants.sc.egov.usda.gov/ImageLibrary/original/" . $g_csv[0] . "_001_php.jpg";
+                    $images[] = $newLink;
+                }
+    }
+fclose($growth_search);
+}
 
-  }
+
+
 
 
 
@@ -208,16 +212,20 @@
     <footer><hr>
       <h1>Plants You May Be Interested In</h1>
       <div>
-        <p>
-        <?php echo "<img src=\'$images[0]\'>"; ?>
-        <?php echo "$similarPlants[0]";?>
-        <?php echo "<img src=\'$images[1]\'>"; ?>
-        <?php echo "$similarPlants[1]";?>
-        <?php echo "<img src=\'$images[2]\'>"; ?>
-        <?php echo "$similarPlants[2]";?>
-        <?php echo "<img src=\'$images[3]\'>"; ?>
-        <?php echo "$similarPlants[3]";?>
-        </p>
+        <table>
+            <tr>
+                <td><?php echo "<img src=\'$images[0]\'>"; ?></td>
+                <td><?php echo "<img src=\'$images[1]\'>"; ?></td>
+                <td><?php echo "<img src=\'$images[2]\'>"; ?></td>
+                <td><?php echo "<img src=\'$images[3]\'>"; ?></td>
+            </tr>
+            <tr>
+                <td><?php echo "$similarPlants[0]";?></td>
+                <td><?php echo "$similarPlants[1]";?></td>
+                <td><?php echo "$similarPlants[2]";?></td>
+                <td><?php echo "$similarPlants[3]";?></td>
+            </tr>
+        </table>
       </div>
     </footer>
 
