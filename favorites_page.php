@@ -243,7 +243,6 @@ session_start();
             ?>
         </table>
     </div>
-    <?php } # END FAV IF ?>
 
     <br><br>
             <div style="display: flex; align-items: center; justify-content: center;">
@@ -267,6 +266,7 @@ session_start();
 
       </div>
     <br><br>
+    <?php } # END FAV IF ?>
 
     <footer><hr>
       <h1><?php echo $text; ?></h1>
