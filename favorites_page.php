@@ -1,4 +1,8 @@
-<<<<<<< HEAD
+<?php
+//Start session
+session_start();
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -51,6 +55,26 @@
         exit();
     }
 
+    if(!array_key_exists("fav_page", $_SESSION)) {
+        $_SESSION['fav_page'] = 1;
+    }
+    if(array_key_exists("next_page", $_POST)) {
+        $_SESSION['fav_page']++;
+    }
+    if(array_key_exists("prev_page", $_POST)) {
+        $_SESSION['fav_page']--;
+        if($_SESSION['fav_page'] < 1){
+            $_SESSION['fav_page'] = 1;
+        }
+    }
+    if(array_key_exists("unfavorite", $_POST)){
+        $unfav_symbol = $_POST['unfavorite'];
+        $user = $_COOKIE['username'];
+        $stmt = $conn->prepare("DELETE FROM favorites WHERE username=? AND symbol=?");
+        $stmt->bind_param("ss", $user, $unfav_symbol);
+        $stmt->execute();
+        $stmt->close();
+    }
 
   $similarPlants = array();
   $images = array();
@@ -76,67 +100,61 @@
             $invasive[] = $row['invasive'];
             $symbol[] = $row['symbol'];
 		}
+        $text = "Plants You May Be Interested In";
+        $fav = True;
+        
+        $length = count($plants);
+
+        $similarPlants = array();
+        $images = array();
+        
+        $curHabit = $habit[0];
+        
+        
+        for ($x = 0; $x < count($habit); $x++) {
+            if ($habit[$x] == "Forb/herb"){
+                $curHabit = $habit[$x];
+            }
+            if ($habit[$x] == "Graminoid"){
+                $curHabit = $habit[$x];
+            }
+            if ($habit[$x] == "Tree"){
+                $curHabit = $habit[$x];
+            }
+            if ($habit[$x] == "Nonvascular"){
+                $curHabit = $habit[$x];
+            }
+            if ($habit[$x] == "Lichenous"){
+                $curHabit = $habit[$x];
+            }
+            if ($habit[$x] == "Vine"){
+                $curHabit = $habit[$x];
+            }
+            if ($habit[$x] == "Shrub"){
+                $curHabit = $habit[$x];
+            }
+            if ($habit[$x] == "Subshrub"){
+                $curHabit = $habit[$x];
+            }
+        }
+        
+        //GET SIMILAR PLANTS
+        if (($growth_search = fopen("data/growth_habit.csv", "r")) !== FALSE) { //FIND GROWTH HABIT OF PLANTS
+            while (($g_csv = fgetcsv($growth_search, 100000, ",")) !== FALSE) {
+                        if($g_csv[4] == $curHabit){ //SYMBOL MATCH
+                            $similarPlants[] = $g_csv[2];
+                            $newLink = "https://plants.sc.egov.usda.gov/ImageLibrary/original/" . $g_csv[0] . "_001_php.jpg";
+                            $images[] = $newLink;
+                        }
+            }
+        fclose($growth_search);
+        }
     }else{
-      echo "no favorites found";
+        $fav = False;
+        $text = "No Favorites Yet!";
     }
 
     $conn->close();
-
-   $length = count($plants);
-
-
-$similarPlants = array();
-$images = array();
-
-$curHabit = $habit[0];
-
-
-for ($x = 0; $x < count($habit); $x++) {
-    if ($habit[$x] == "Forb/herb"){
-        $curHabit = $habit[$x];
-    }
-    if ($habit[$x] == "Graminoid"){
-        $curHabit = $habit[$x];
-    }
-    if ($habit[$x] == "Tree"){
-        $curHabit = $habit[$x];
-    }
-    if ($habit[$x] == "Nonvascular"){
-        $curHabit = $habit[$x];
-    }
-    if ($habit[$x] == "Lichenous"){
-        $curHabit = $habit[$x];
-    }
-    if ($habit[$x] == "Vine"){
-        $curHabit = $habit[$x];
-    }
-    if ($habit[$x] == "Shrub"){
-        $curHabit = $habit[$x];
-    }
-    if ($habit[$x] == "Subshrub"){
-        $curHabit = $habit[$x];
-    }
-}
-
-//GET SIMILAR PLANTS
-if (($growth_search = fopen("data/growth_habit.csv", "r")) !== FALSE) { //FIND GROWTH HABIT OF PLANTS
-    while (($g_csv = fgetcsv($growth_search, 100000, ",")) !== FALSE) {
-                if($g_csv[4] == $curHabit){ //SYMBOL MATCH
-                    $similarPlants[] = $g_csv[2];
-                    $newLink = "https://plants.sc.egov.usda.gov/ImageLibrary/original/" . $g_csv[0] . "_001_php.jpg";
-                    $images[] = $newLink;
-                }
-    }
-fclose($growth_search);
-}
-
-
-
-
-
-
-
-
 
 ?>
 
@@ -166,8 +184,8 @@ fclose($growth_search);
           <p class="source-sans-text">Discover the perfect plants tailored to your location with our personalized plant recommendation tool.</p>
 
         </div>
-
     </div>
+    <?php if($fav){ # BEGIN FAV IF - ONLY SHOW TABLE IF THERE IS A FAVORITE ?>
     <div class="table-container">
         <table class="styled-table">
             <tr class="header-row">
@@ -178,10 +196,25 @@ fclose($growth_search);
                 <td class="multi-line">Invasive</td>
                 <td class="multi-line">Plant Guide</td>
                 <td class="multi-line">Fact Sheet</td>
-                <td class="multi-line">Favorite</td>
+                <td class="multi-line">Unfavorite</td>
             </tr>
             <?php
-            for ($i = 0; $i < $length; $i++){
+            $count = sizeof($symbol);
+            $max_page = ceil($count/10);
+            $page = $_SESSION['fav_page'];
+            if($page > $max_page){
+                $_SESSION['fav_page'] = $max_page;
+                $page = $max_page;
+            }
+            $min = ($page - 1) * 10;
+            $max = $min + 10;
+            if(($page*10 - $count) > 0){
+                $max = ($count - ($page-1)*10)+$min;
+            }
+            for ($i = $min; $i < $max; $i++){
+
+
+
             ?>
             <?php $pgLink = "https://plants.usda.gov/DocumentLibrary/plantguide/pdf/pg_" . $symbol[$i] . ".pdf"; ?>
             <?php $fsLink = "https://plants.usda.gov/DocumentLibrary/factsheet/pdf/fs_" . $symbol[$i] . ".pdf"; ?>
@@ -200,19 +233,45 @@ fclose($growth_search);
                   <td class="multi-line"><?php echo "<a href=$fsLink>Link Available</a>"; ?></td>
                 <?php }else{ ?>
                   <td class="multi-line"><?php echo "Link Unavailable"; ?></td>
-                <?php } ?>
+                  <?php } ?>
+                  <td><form method="post">
+                <input type="submit" name="unfavorite" value="<?php echo $symbol[$i] ?>">	      
+                </form></td>	  
             </tr>
             <?php
             }
             ?>
         </table>
     </div>
+    <?php } # END FAV IF ?>
 
+    <br><br>
+            <div style="display: flex; align-items: center; justify-content: center;">
+                        <?php if($page > 1){ ?>
+            <form method="post">
+                <button type="submit" name="prev_page" class="button work-sans-text square-button">&lt;</button>
+            </form>
+            <?php } else { ?>
+            <div class="button non-clickable-button"></div>
+            <?php } ?>
+
+            <p class="source-sans-text" style="text-align: center; padding-left: 20px; padding-right: 20px;">Page <?php echo $page; ?></p>
+
+            <?php if($page < $max_page){ ?>
+            <form method="post">
+                <button type="submit" name="next_page" class="button work-sans-text square-button">&gt;</button>
+            </form>
+            <?php } else { ?>
+            <div class="button non-clickable-button"></div>
+            <?php } ?>
+
+      </div>
     <br><br>
 
     <footer><hr>
-      <h1>Plants You May Be Interested In</h1>
+      <h1><?php echo $text; ?></h1>
       <div>
+      <?php if($fav){ # BEGIN FAV IF - ONLY SHOW PLANTS IF THERE IS A FAVORITE ?>
         <table>
             <tr>
                 <td><?php echo "<img src=\'$images[0]\'>"; ?></td>
@@ -227,6 +286,7 @@ fclose($growth_search);
                 <td><?php echo "$similarPlants[3]";?></td>
             </tr>
         </table>
+        <?php } # END FAV IF ?>
       </div>
     </footer>
 
