@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 <?php
 //Start session
 session_start();
@@ -435,6 +434,7 @@ $cBut = 0;
 if(array_key_exists("favorite", $_POST)){
   $cBut = intval($_POST['favorite']);
   addFavorite($conn, $cBut);
+  $text = display_table($_SESSION['page']);
 }
 function addFavorite($conn, $cBut){
   //re-declared these here to resolve scoping error
@@ -583,3 +583,4 @@ $conn->close();
 
 
 </body>
+</html>
