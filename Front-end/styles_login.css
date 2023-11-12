@@ -3,10 +3,9 @@ body { /* body format */
     padding: 0;
     overflow-x: hidden;
     position: relative;
-    background-image: url('Front-end/images/background.jpg');
+    background-image: url('images/background.jpg');
     background-attachment: fixed; 
     background-size: cover;
-    padding-bottom: 1200px;
 }
 
 .button-bar {
@@ -23,7 +22,6 @@ body { /* body format */
     z-index: 2;
     box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1); /* Add a subtle box-shadow for depth */
     background: linear-gradient(180deg, rgba(185, 224, 162, 1) 0%, rgba(185, 224, 162, 0.8) 100%); /* Add a subtle background gradient */
-    padding-bottom: 1200px;
 }
 
 .logo {

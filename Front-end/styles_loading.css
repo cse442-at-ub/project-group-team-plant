@@ -1,0 +1,76 @@
+html, body {
+    background-color: #f4ffee;
+}
+
+.button-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: rgba(185, 224, 162, 1);
+    padding: 15px 20px;
+    height: auto;
+    position: absolute;
+    top: 35px;
+    left: 0;
+    right: 0;
+    z-index: 2;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1); /* Add a subtle box-shadow for depth */
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    color: rgb(0, 0, 0); /* Set the text color without transparency */
+    font-weight: 400; /* Optionally, make the text bold */
+    font-family: 'Poppins', sans-serif; /* Set the desired font-family for text */
+}
+
+.logo img {
+    width: 30px; /* Adjust the size of the logo */
+    height: 30px;
+    margin-right: 10px; /* Add some spacing between the logo and text */
+}
+
+/* New styles for the loading GIF container */
+.loading-gif-container {
+    position: absolute;
+    top: 550%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 9999; /* Ensure the loading GIF is on top of other elements */
+}
+
+.loading-gif-container img {
+    width: 350px; /* Adjust the size of the GIF as needed */
+    height: 350px;
+    /* Add any other styles you want for the loading GIF */
+}
+
+.team-logo {
+    position: absolute;
+    top: 550%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 9999; /* Ensure the loading GIF is on top of other elements */
+}
+
+.team-logo img {
+    width: 85px; /* Adjust the size of the GIF as needed */
+    height: 85px;
+    /* Add any other styles you want for the loading GIF */
+}
+
+.loading-text-container {
+    position: absolute;
+    top: 900%; /* Adjust the position as needed */
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 9999;
+    text-align: center; /* Center-align the text */
+    font-family: 'Work Sans', sans-serif; /* Set the desired font-family for text */
+}
+
+#loadingText {
+    font-size: 18px; /* Adjust the font size as needed */
+    color: #333; /* Set the text color */
+}

@@ -7,9 +7,8 @@ session_start();
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Team Plant</title>
-    <link rel="stylesheet" type="text/css" href="Front-end/new_results.css">
+    <link rel="stylesheet" type="text/css" href="style_fav.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;600&display=swap" rel="stylesheet">
 </head>
@@ -102,15 +101,15 @@ session_start();
 		}
         $text = "Plants You May Be Interested In";
         $fav = True;
-        
+
         $length = count($plants);
 
         $similarPlants = array();
         $images = array();
-        
+
         $curHabit = $habit[0];
-        
-        
+
+
         for ($x = 0; $x < count($habit); $x++) {
             if ($habit[$x] == "Forb/herb"){
                 $curHabit = $habit[$x];
@@ -137,7 +136,7 @@ session_start();
                 $curHabit = $habit[$x];
             }
         }
-        
+
         //GET SIMILAR PLANTS
         if (($growth_search = fopen("data/growth_habit.csv", "r")) !== FALSE) { //FIND GROWTH HABIT OF PLANTS
             while (($g_csv = fgetcsv($growth_search, 100000, ",")) !== FALSE) {
@@ -154,11 +153,14 @@ session_start();
         $text = "No Favorites Yet!";
     }
 
+    $num0 = rand(0, count($images)-1);
+    $num1 = rand(0, count($images)-1);
+    $num2 = rand(0, count($images)-1);
+    $num3 = rand(0, count($images)-1);
+
     $conn->close();
 
 ?>
-
-<div class="bg-image"></div> <!-- Background image -->
 
 <div class="button-bar"> <!-- Button Bar -->
     <div class="logo">
@@ -185,6 +187,7 @@ session_start();
 
         </div>
     </div>
+    <br><br><br><br>
     <?php if($fav){ # BEGIN FAV IF - ONLY SHOW TABLE IF THERE IS A FAVORITE ?>
     <div class="table-container">
         <table class="styled-table">
@@ -235,8 +238,10 @@ session_start();
                   <td class="multi-line"><?php echo "Link Unavailable"; ?></td>
                   <?php } ?>
                   <td><form method="post">
-                <input type="submit" name="unfavorite" value="<?php echo $symbol[$i] ?>">	      
-                </form></td>	  
+                    <input type="hidden" name="unfavorite" value="<?php echo $symbol[$i] ?>">
+
+                    <input type="image" src="brokenheart.png" class="heart-button" alt="Unfavorite">
+                </form></td>
             </tr>
             <?php
             }
@@ -269,21 +274,39 @@ session_start();
     <?php } # END FAV IF ?>
 
     <footer><hr>
-      <h1><?php echo $text; ?></h1>
+      <br><br><br>
+      <h1 style="font-family: 'Poppins', sans-serif; padding-left: 190px;"><?php echo $text; ?></h1>
+      <br>
       <div>
       <?php if($fav){ # BEGIN FAV IF - ONLY SHOW PLANTS IF THERE IS A FAVORITE ?>
-        <table>
+        <table class="pics">
             <tr>
-                <td><?php echo "<img src=\'$images[0]\'>"; ?></td>
-                <td><?php echo "<img src=\'$images[1]\'>"; ?></td>
-                <td><?php echo "<img src=\'$images[2]\'>"; ?></td>
-                <td><?php echo "<img src=\'$images[3]\'>"; ?></td>
+              <?php if (is_array(getimagesize($images[$num0]))) { ?>
+                <td><?php echo "<img src=$images[$num0] width=\"220\" height=\"220\">"; ?></td>
+              <?php }else{ ?>
+                <td><?php echo '<img src="noplantfound.jpg">'; ?></td>
+              <?php } ?>
+              <?php if (is_array(getimagesize($images[$num1]))) { ?>
+                <td><?php echo "<img src=$images[$num1] width=\"220\" height=\"220\">"; ?></td>
+              <?php }else{ ?>
+                <td><?php echo '<img src="noplantfound.jpg">'; ?></td>
+              <?php } ?>
+              <?php if (is_array(getimagesize($images[$num2]))) { ?>
+                <td><?php echo "<img src=$images[$num2] width=\"220\" height=\"220\">"; ?></td>
+              <?php }else{ ?>
+                <td><?php echo '<img src="noplantfound.jpg">'; ?></td>
+              <?php } ?>
+              <?php if (is_array(getimagesize($images[$num3]))) { ?>
+                <td><?php echo "<img src=$images[$num3] width=\"220\" height=\"220\">"; ?></td>
+              <?php }else{ ?>
+                <td><?php echo '<img src="noplantfound.jpg">'; ?></td>
+              <?php } ?>
             </tr>
             <tr>
-                <td><?php echo "$similarPlants[0]";?></td>
-                <td><?php echo "$similarPlants[1]";?></td>
-                <td><?php echo "$similarPlants[2]";?></td>
-                <td><?php echo "$similarPlants[3]";?></td>
+                <td><?php echo "$similarPlants[$num0]";?></td>
+                <td><?php echo "$similarPlants[$num1]";?></td>
+                <td><?php echo "$similarPlants[$num2]";?></td>
+                <td><?php echo "$similarPlants[$num3]";?></td>
             </tr>
         </table>
         <?php } # END FAV IF ?>
