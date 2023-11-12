@@ -3,10 +3,9 @@ body { /* body format */
     padding: 0;
     overflow-x: hidden;
     position: relative;
-    background-image: url('Front-end/images/background.jpg');
+    background-image: url('images/background.jpg');
     background-attachment: fixed; 
     background-size: cover;
-    padding-bottom: 1200px;
 }
 
 .button-bar {

@@ -1,28 +1,10 @@
-body { /* body format */
+body {
+    background-color: #e5e5e5;
     margin: 0;
     padding: 0;
-    overflow-x: hidden;
-    position: relative;
-}
-
-.bg-image { /* background image */
     background-image: url('images/background.jpg');
+    background-attachment: fixed; 
     background-size: cover;
-    background-repeat: no-repeat;
-    background-attachment: scroll;
-    width: 100vw;
-    height: 100vh;
-}
-
-.bg-image::before { /* adds the soft light filter */
-    content: "";
-    background: rgba(255, 255, 255, 0.7);
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 1;
 }
 
 .button-bar {
@@ -39,6 +21,21 @@ body { /* body format */
     z-index: 2;
     box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1); /* Add a subtle box-shadow for depth */
     background: linear-gradient(180deg, rgba(185, 224, 162, 1) 0%, rgba(185, 224, 162, 0.8) 100%); /* Add a subtle background gradient */
+}
+
+.button-bar2 {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: rgba(185, 224, 162, 1);
+    padding: 15px 20px;
+    height: auto;
+    position: absolute;
+    top: 35px;
+    left: 0;
+    right: 0;
+    z-index: 2;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1); /* Add a subtle box-shadow for depth */
 }
 
 .logo {
@@ -93,7 +90,13 @@ nav a:hover {
   }
   
 .text-box {
-    margin-bottom: 15px; /* Reduce the gap between text boxes */
+    margin-bottom: 5px; /* Reduce the gap between text boxes */
+  }
+
+.text-box2 {
+    @media (max-width: 600px) {
+        padding-top: 50px;
+    }
   }
   
 .work-sans-text {
@@ -147,59 +150,130 @@ nav a:hover {
     background-color: #81b662; /* Darker green on hover */
 }
 
-.feature-box-container {
-    position: absolute;
-    top: 0;
-    right: 0;
-    display: flex;
-    flex-direction: column; /* Stack elements vertically */
-    height: 100%; /* Ensure the feature boxes occupy the full height */
-    padding-right: 20px; /* Optional: Add some right padding for spacing */
-    margin-top: 110px;
-    z-index: 3;
-}
-
-.feature-box {
-    background-color: #b9e0a2;
-    color: #ffffff;
+.zip-code-box filter {
+    padding: 17px 40px;
+    background-color: #000000; /* Green background color */
+    border: none;
+    outline: none;
+    cursor: pointer;
     font-family: 'Work Sans', sans-serif;
-    padding: 20px;
-    border-radius: 10px;
-    margin-bottom: 20px;
-    width: 350px;
-    box-shadow: 3px 3px 6px rgba(82, 82, 82, 0.8);
-    transition: all 0.3s; /* Add a transition for all properties */
+    font-size: 16px;
+    color: #ffffff; /* White text color */
+    margin-left: 10px; /* Add spacing between input and button */
+    box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.5); /* Add a drop shadow effect */
+    transition: box-shadow 0.3s; /* Add a smooth transition for the shadow */
 }
 
-
-.feature-box:hover {
-    background-color: #81b662;
-    color: #ffffff;
-    box-shadow: 5px 5px 10px rgba(82, 82, 82, 1);
-    transform: translateY(-5px); /* Move the box 5px upward on hover */
+.zip-code-box filter:hover {
+    background-color: #ffffff; /* Darker green on hover */
 }
 
-.feature-box img {
-    vertical-align: middle;
-    width: 60px;
-    margin-bottom: 10px;
-}
-
-/* Feature box headers */
-.feature-box h2 {
-    font-size: 24px; /* Adjust the header font size */
-    font-weight: 600;
-    margin: 0;
-}
-
-/* Feature box descriptions */
-.feature-box p {
-    font-size: 16px; /* Adjust the description font size */
-}
-
-/* Media query to hide feature boxes on smaller screens */
-@media (max-width: 1150px) {
-    .feature-box {
-        display: none; /* Hide feature boxes on small screens */
+.table-container {
+    position: relative;
+    left: 10%; /* Adjust the left position as needed */
+    width: 80%;
+    @media (max-width: 600px) {
+        margin-top: 90px; /* Adjust this value for smaller screens */
+    }
+    @media (max-width: 550px) {
+        margin-top: 120px; /* Adjust this value for smaller screens */
+    }
+    @media (max-width: 500px) {
+        margin-top: 150px; /* Adjust this value for smaller screens */
+    }
+    @media (max-width: 450px) {
+        margin-top: 180px; /* Adjust this value for smaller screens */
+    }
+    @media (max-width: 400px) {
+        margin-top: 210px; /* Adjust this value for smaller screens */
+    }
+    @media (max-width: 350px) {
+        margin-top: 240px; /* Adjust this value for smaller screens */
+    }
+    @media (max-width: 300px) {
+        margin-top: 300px; /* Adjust this value for smaller screens */
+    }
+    @media (max-width: 250px) {
+        margin-top: 400px; /* Adjust this value for smaller screens */
+    }
+    @media (max-width: 200px) {
+        margin-top: 500px; /* Adjust this value for smaller screens */
     }
 }
+
+/* Style the table within the container */
+.styled-table {
+    border-collapse: collapse;
+    width: 100%; /* Table width should be 100% to fit the container */
+}
+
+.styled-table, .styled-table th, .styled-table td {
+    border: 1px solid #808080;
+    padding: 15px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 15px;
+}
+
+.styled-table td.multi-line {
+    line-height: 1.5;
+}
+
+.header-row {
+    background-color: #b9e0a2 !important;
+    font-weight: bold;
+    line-height: .15;
+}
+
+/* Style even rows */
+tr:nth-child(odd) {
+    background-color: #f4ffee;
+    line-height: .5;
+}
+
+/* Style odd rows */
+tr:nth-child(even) {
+    background-color: #FFFFFF;
+    line-height: .5;
+}
+.heart-button {
+    width: 32px; /* Set your desired width */
+    height: 28px; /* Set your desired height */
+    margin-left: 25%;
+    transition: transform 0.2s; /* Add a transition for a smooth animation */
+}
+
+.heart-button:hover {
+    transform: scale(1.1); /* Increase the scale (size) on hover */
+}
+
+.square-button {
+    background-color: black;
+    color: white;
+    width: 40px; /* Adjust the width and height as needed */
+    height: 40px;
+    border: none;
+    border-radius: 5px;
+    font-size: 30px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.non-clickable-button {
+    background-color: black;
+    color: white;
+    width: 40px; /* Adjust the width and height as needed */
+    height: 40px;
+    border: none;
+    border-radius: 5px;
+    font-size: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.select-with-shadow {
+    box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.25); /* You can adjust the values as needed */
+    transition: box-shadow 0.3s; /* Add a smooth transition for the shadow */
+  }
