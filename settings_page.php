@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Team Plant</title>
-    <link rel="stylesheet" type="text/css" href="Front-end/styles.css">
+    <link rel="stylesheet" type="text/css" href="styles_settings.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;600&display=swap" rel="stylesheet">
 </head>
@@ -52,33 +52,62 @@
 	}
 
   function change_username($conn){
-    $username = strval($_POST['current_user']);
-	$password = strval($_POST['current_pass']);
-    $newusername = strval($_POST['new_user']);
+	$username = htmlspecialchars(strval($_POST['current_user']), ENT_QUOTES, 'UTF-8');
+	$password = htmlspecialchars(strval($_POST['current_pass']), ENT_QUOTES, 'UTF-8');
+	$newusername = htmlspecialchars(strval($_POST['new_user']), ENT_QUOTES, 'UTF-8');
 
+
+	if($username != $_COOKIE['username']){
+		echo "Username or password is not correct.";
+		return;
+	}
     if ($newusername == ""){
-			echo "Invalid input, please enter a different username.";
+			echo "Invalid input, please enter a different password.";
 			return;
     }
-
-    if ($newusername == $username){
-  		echo "Invalid input, please enter a different username.";
-  		return;
-    }
-
-    $stmt = $conn->prepare("UPDATE accounts SET username=? WHERE username=?");
-		$stmt->bind_param("ss", $newusername, $username);
-		$stmt->execute();
-    $stmt->close();
-    login_account($conn, $newusername, $password);
+	
+	$stmt = $conn->prepare("SELECT * FROM accounts WHERE username=?");
+	$stmt->bind_param("s", $username);
+	$stmt->execute();
+	$result = $stmt->get_result();
+	$stmt->close();
+	if($result->num_rows > 0) {
+		while($row = $result->fetch_assoc()) {
+			$t_username = $row["username"];
+			$hash_pass = $row["password"];
+			//$table_auth = $row["auth"];
+		}
+		if(password_verify(strval($password), strval($hash_pass)) && $t_username == $username){
+			//CORRECT PASSWORD
+			$stmt = $conn->prepare("UPDATE accounts SET username=? WHERE username=?");
+			$stmt->bind_param("ss", $newusername, $username);
+			$stmt->execute();
+			$stmt->close();
+			login_account($conn, $newusername, $password);
+		} 
+		if($t_username == $username){
+			echo "Username already taken";
+			return;
+		}
+		else {
+			echo "Username or password is not correct.";
+		}
+	} else {
+		echo "Username or password is not correct.";
+	}
     //header('Location: https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442k//accsettingspage.php');
   }
 
   function change_password($conn){
-    $username = strval($_POST['current_user']);
-	$password = strval($_POST['current_pass']);
-    $newpassword = strval($_POST['new_pass']);
+	$username = htmlspecialchars(strval($_POST['current_user']), ENT_QUOTES, 'UTF-8');
+	$password = htmlspecialchars(strval($_POST['current_pass']), ENT_QUOTES, 'UTF-8');
+	$newpassword = htmlspecialchars(strval($_POST['new_pass']), ENT_QUOTES, 'UTF-8');
 
+
+	if($username != $_COOKIE['username']){
+		echo "Username or password is not correct.";
+		return;
+	}
     if ($newpassword == ""){
 			echo "Invalid input, please enter a different password.";
 			return;
@@ -91,11 +120,11 @@
 	$stmt->close();
 	if($result->num_rows > 0) {
 		while($row = $result->fetch_assoc()) {
-			$username = $row["username"];
+			$t_username = $row["username"];
 			$hash_pass = $row["password"];
 			//$table_auth = $row["auth"];
 		}
-		if(password_verify(strval($password), strval($hash_pass))){
+		if(password_verify(strval($password), strval($hash_pass)) && $t_username == $username){
 			//CORRECT PASSWORD
 			$hashedpassword = strval(password_hash($newpassword, PASSWORD_DEFAULT));
 			$stmt = $conn->prepare("UPDATE accounts SET password=? WHERE username=?");
@@ -104,16 +133,16 @@
 			$stmt->close();
 			login_account($conn, $username, $newpassword);
 		} else {
-			echo "Password is incorrect.";
+			echo "Username or password is not correct.";
 		}
 	} else {
-		echo "Username not found.";
+		echo "Username or password is not correct.";
 	}
     //header('Refresh:0; Location: https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442k//accsettingspage.php');
   }
 
   function set_zip($conn){
-    $zipcode = strval($_POST['new_zip']);
+	$zipcode = htmlspecialchars(strval($_POST['new_zip']), ENT_QUOTES, 'UTF-8');
 	if(isset($_COOKIE['username'])){
 		if(verify_cookie($conn, $_COOKIE['username'], $_COOKIE['auth'])){
 			//LOGGED IN
@@ -127,7 +156,6 @@
 			$stmt->bind_param("ss", $zipcode, $username);
 			$stmt->execute();
 			$stmt->close();
-			login_account($conn, $username, $password);
 			echo "Zipcode " . $zipcode . " saved.";
 		}
 	}else{
@@ -192,96 +220,83 @@
 		<ul>
 			<li><a href="https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442k/">Home</a></li>
 			<li><a href="">About</a></li>
-			<li><a href="">My Favorites</a></li>
-			<li><a href=""><b>Account</b></a></li>
+			<li><a href="https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442k/favorites_page.php">My Favorites</a></li>
+			<li><a href="https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442k/settings_page.php"><b>Account</b></a></li>
 		</ul>
 	</nav>
 
-	<div class="content">
-		<div class="textbox">
-			<h1>Account Settings</h1>
-			<p>Change your profile and account settings</p>
-		</div>
+    <div class="text-boxes"> <!-- Text boxes above zip code box -->
+            
+        <div class="text-box">
+          <p class="work-sans-text">Account Settings</p>
+        </div>
+        <div class="text-box">
+          <p class="source-sans-text">Change your profile and account settings.</p>
+        </div>
 
-		<div class="settings">
-			<div class="green-box">
+        <div class="settings-box">
+          <form method="post">
+          <h2 class="work-sans-text">Change Username</h2>
+          <div class="setting">
+              <label for="username">Current Username:</label>
+              <input type="text" id="username" placeholder="Enter your current username" name="current_user">
+          </div>
+          <div class="setting">
+              <label for="current-password">Current Password:</label>
+              <input type="password" id="current-password" placeholder="Enter your current password" name="current_pass">
+          </div>
+          <div class="setting">
+              <label for="new-password">New Username:</label>
+              <input type="password" id="new-password" placeholder="Enter your new username" name="new_user">
+          </div>
+          <button type=submit class="green-button" name="change_username">Change Username</button>
+        </form>
+      </div>
 
-				<h2>Change Username</h2>
-				<form method="post">
-					
-					<div class="input-container">
-						<label>Current Username</label>
-						<input type="text" placeholder="Enter your current username" name="current_user">
-					</div>
-					<div class="input-container">
-						<label>Current Password</label>
-						<input type="password" placeholder="Enter your current password" name="current_pass">
-					</div>
-					<div class="input-container">
-						<label>New Username</label>
-						<input type="text" placeholder="Enter your new username" name="new_user">
-					</div>
-					<div class="input-container">
-						<button type="submit" class="save-button" name="change_username">Change Username</button>
-					</div>
-				</form>
-			</div>
 
-			<div class="green-box">
+      <div class="settings-box">
+        <form method="post">
+        <h2 class="work-sans-text">Change Password</h2>
+        <div class="setting">
+            <label for="username">Current Username:</label>
+            <input type="text" id="username" placeholder="Enter your current username" name="current_user">
+        </div>
+        <div class="setting">
+            <label for="current-password">Current Password:</label>
+            <input type="password" id="current-password" placeholder="Enter your current password" name="current_pass">
+        </div>
+        <div class="setting">
+            <label for="new-password">New Password:</label>
+            <input type="password" id="new-password" placeholder="Enter your new password" name="new_pass">
+        </div>
+        <button type="submit" class="green-button" name="change_password">Change Password</button>
+      </form>
+    </div>
 
-				<h2>Change Password</h2>
-				<form method="post">
-					
-					<div class="input-container">
-						<label>Current Username</label>
-						<input type="text" placeholder="Enter your current username" name="current_user">
-					</div>
-					<div class="input-container">
-						<label>Current Password</label>
-						<input type="password" placeholder="Enter your current password" name="current_pass">
-					</div>
-					<div class="input-container">
-						<label>New Password</label>
-						<input type="password" placeholder="Enter your new password" name="new_pass">
-					</div>
-					<div class="input-container">
-						<button type="submit" class="save-button" name="change_password">Change Password</button>
-					</div>
-				</form>
-			</div>
 
-			<div class="green-box">
+      <div class="settings-box">
+        <form method="post">
+        <h2 class="work-sans-text">Change Zipcode</h2>
+        <div class="setting">
+            <label for="username">Enter Zipcode:</label>
+            <input type="text" id="username" placeholder="Enter your current zipcode" name="new_zip">
+        </div>
+        <button type="submit" class="green-button" name="set_zip" style="margin-top: 158px;">Set Zipcode</button>
+      </form>
+    </div>
 
-				<h2>Change Zipcode</h2>
-				<form method="post">
-					
-					<div class="input-container">
-						<label>Enter ZIP Code</label>
-						<input type="text" placeholder="Enter your current ZIP code" name="new_zip">
-					</div>
-					<div class="input-container">
-						<button type="submit" class="save-button" name="set_zip">Set ZIP Code</button>
-					</div>
-				</form>
-				
-			</div>
-
-			<div class="green-box">
-
-				<h2>Sign Out Here</h2>
-				<form method="post">
-					
-					<div class="input-container">
-						<button type="submit" class="save-button" name="sign_out">Sign Out</button>
-					</div>
-				</form>
-			</div>
-
-		</div>
-
-	</div>
+    
+    <div class="settings-box">
+      <form method="post">
+      <h2 class="work-sans-text" style="margin-bottom: 236px;">Sign Out</h2>
+      <button type="submit" class="green-button" name="sign_out">Sign Out</button>
+    </form>
+  </div>
+        
+    </div>
 
 </div>
+
 
 </body>
 </html>

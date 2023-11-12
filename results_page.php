@@ -1,14 +1,29 @@
+<?php
+//Start session
+session_start();
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Team Plant</title>
-    <link rel="stylesheet" type="text/css" href="Front-end/styles_results.css">
+    <link rel="stylesheet" type="text/css" href="Front-end/new_results.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;600&display=swap" rel="stylesheet">
 </head>
 <body>
+      <script>
+        function toggleFilters() {
+            var hiddenselect = document.getElementById('hiddenselect');
+            if (hiddenselect.style.display === "none" || hiddenselect.style.display === "") {
+                hiddenselect.style.display = "block";
+            } else {
+                hiddenselect.style.display = "none";
+            }
+        }
+    </script>
   <?php
   $server = "oceanus.cse.buffalo.edu";
 	$user = "sepalutr";
@@ -49,14 +64,15 @@
         header("Location: login_page.php");
         exit();
     }
-	
-	$conn->close();
+
 
   if (!function_exists('str_contains')) {
     function str_contains($haystack, $needle) {
       return $needle !== '' && mb_strpos($haystack, $needle) !== false;
     }
   }
+
+
   $ret = array();
   $numOfPlants = 0;
   $printPlants = array();
@@ -66,20 +82,31 @@
   $rarity = array(); //RARITY
   $invasive = array(); //INVASIVE
   $new_output = null;
-
+  $text = "";
 
 
   if(array_key_exists("recommend_button", $_POST)) {
-    $ret = zip_search();
+    $_POST['zip'] = htmlspecialchars($_POST['zip']);
+    $text = zip_search();
   }
-  $fips = "";
-  $state_id = "";
-  function zip_search(){
+  if(array_key_exists("next_page", $_POST)) {
+    $_SESSION['page']++;
+    $text = display_table($_SESSION['page']);
+  }
+  if(array_key_exists("prev_page", $_POST)) {
+    $_SESSION['page']--;
+    $text = display_table($_SESSION['page']);
+  }
+
+  function zip_search(){ 
+      $fips = "";
+      $state_id = "";
+      $zip = htmlspecialchars(strval($_POST['zip']), ENT_QUOTES, 'UTF-8');
       $plants = array(); //COMMON NAME
       $latin = array(); //SCIENTIFIC NAME
       $symbol = array(); //SYMBOL
       $habit = array(); //GROWTH HABIT
-      $zip = strval($_POST['zip']);
+      $text = "Results for";
       if (($zip_search = fopen("data/uszips.csv", "r")) !== FALSE) { //FIND FIPS & STATE FROM ZIP
         while (($csv = fgetcsv($zip_search, 100000, ",")) !== FALSE) {
           if(strval($csv[0]) == strval($zip)){
@@ -90,8 +117,8 @@
         }
         fclose($zip_search);
       }else{ //INVALID ZIP
-          print("The zipcode was not valid");
-          return;
+          $text = "The zipcode ". $zip ." was invalid";
+          return $text;
       }
   $state_csv = strval($state_id) . ".csv";
   $us_fips = "US" . strval($fips);
@@ -109,14 +136,27 @@
       }
     }
   fclose($plant_search);
+  //FIGURE OUT PAGE
+  $page = 1;
+
+  $min = ($page - 1) * 10;
+  $max = $min + 10;
+
+  $t_list = array(); //table list
+  $j = 0; //$j t_list count / $i symbol count
+  for($i = $min; $i <= $max; $i++){
+    $t_list[$j] = $symbol[$i];
+    $j++;
+  }
+
   //print("PLANT");
   }else{ //INVALID ZIPCODE (WRONG ZIP/STATE)
-          print("The zipcode was not valid");
-          return;
+          $text = "The zipcode ". $zip ." was invalid";
+          return $text;
   }
   if(count($plants) == 0){ //NO RESULTS
-    print_r("No results found");
-    return;
+    $text = "No results for ". $zip;
+    return $text;
   }
       if (($growth_search = fopen("data/growth_habit.csv", "r")) !== FALSE) { //FIND GROWTH HABIT OF PLANTS
     while (($g_csv = fgetcsv($growth_search, 100000, ",")) !== FALSE) {
@@ -140,7 +180,6 @@
   //print("GROWTH");
       if (($rarity_search = fopen("data/rarity.csv", "r")) !== FALSE) { //FIND RARITY OF PLANTS
     while (($r_csv = fgetcsv($rarity_search, 100000, ",")) !== FALSE) {
-              $check = "WHILE";
               for($j = 0; $j <= count($symbol)-1; $j++){
                   if($r_csv[0] == $symbol[$j]){ //SYMBOL MATCH
                         //CHECK IF "Endangered" OR "Threatened"
@@ -172,7 +211,17 @@
   fclose($inv_search);
   }
       $numOfPlants = count($plants);
-
+      for($i = 0; $i <= count($plants)-1; $i++){
+        if(!array_key_exists($i, $printHabit) || $printHabit[$i] == ""){
+          $printHabit[$i] = "N/A";
+        }
+        if(!array_key_exists($i, $rarity) || $rarity[$i] == ""){
+          $rarity[$i] = "N/A";
+        }
+        if(!array_key_exists($i, $invasive) || $invasive[$i] == ""){
+          $invasive[$i] = "N/A";
+        }
+      }
       $filter = array();
       //FIND ALL INDEX's
       for($i = 0; $i <= count($plants)-1; $i++){
@@ -259,172 +308,376 @@
       }
 
       if(count($filter) == 0){ //NO RESULTS
-        print_r("NO RESULTS FOUND");
-        return;
+        $text = "No results for ". $zip;
+        return $text;
       }
-      ?>
-      <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
-      <table style="z-index:3; position:absolute;">
-        <tr>
-          <td>COMMON NAME </td>
-          <td>SCIENTIFIC NAME </td>
-          <td>SYMBOL </td>
-          <td>GROWTH HABIT </td>
-          <td>RARITY </td>
-          <td>INVASIVE </td>
-          <td>PDF LINK </td>
-        </tr>
-        <?php foreach($filter as $i) : ?>
-        <?php $pgLink = "https://plants.usda.gov/DocumentLibrary/plantguide/pdf/pg_" . $printSymbol[$i] . ".pdf"; ?>
-        <?php $fsLink = "https://plants.usda.gov/DocumentLibrary/factsheet/pdf/fs_" . $printSymbol[$i] . ".pdf"; ?>
-        <tr>
-          <td><?php echo "$printPlants[$i] <br>";?></td>
-          <td><?php echo "$printLatin[$i] <br>";?></td>
-          <td><?php echo "$printSymbol[$i] <br>";?></td>
-          <td><?php echo "$printHabit[$i] <br>";?></td>
-          <td><?php echo "$rarity[$i] <br>";?></td>
-          <td><?php echo "$invasive[$i] <br>";?></td>
-          <td><?php echo "<a href=$pgLink>Plant Guide</a>"; ?></td>
-          <td><?php echo "<a href=$fsLink>Fact Sheet</a>"; ?></td>
-        </tr>
-        <?php endforeach; ?>
-      </table>
-
-
-      <?php
-      //$num = 365;
-      //print("COUNT:" . count($plants));
-      //print($plants[$num].", ".$latin[$num].", ".$symbol[$num].", ".$habit[$num]);
-      return array($plants, $latin, $symbol, $habit); //RETURN COMMON & SCIENTIFIC
+      $text = "Results for " . $zip . ":";
+      $_SESSION['plants'] = $printPlants;
+      $_SESSION['latin'] = $printLatin;
+      $_SESSION['habit'] = $printHabit;
+      $_SESSION['rarity'] = $rarity;
+      $_SESSION['invasive'] = $invasive;
+      $_SESSION['filter'] = $filter;
+      $_SESSION['symbol'] = $printSymbol;
+      $_SESSION['zip'] = $zip;
+      $_SESSION['page'] = 1;
+      display_table(1);
+      $text = "Results for " . $zip . ":";
+      return $text;
 }
-/*//flatten array
-$finalArray = array();
-foreach(range(1,$numOfPlants) as $index){
-  $newPlant = $ret[0][$index];
-  $newLatin = $ret[1][$index];
-  $newSymbol = $ret[2][$index];
-  $newHabit = $ret[3][$index];
-  if(empty($finalArray)){
-    $finalArray = array($newPlant, $newLatin, $newSymbol, $newHabit);
-  }else{
-    array_push($finalArray, )
+
+
+function display_table($page){
+  if($page < 1){
+    $_SESSION['page'] = 1;
+    $page = 1;
   }
-}
-*/
-
-
-?>
-
-
-<?php
-	$server = "oceanus.cse.buffalo.edu";
-	$user = "sepalutr";
-	$pass = "50338448";
-	$dbname = "cse442_2023_fall_team_k_db";
-	
-	$conn = new mysqli($server, $user, $pass, $dbname);
-	
-	if ($conn->connection_error) {
-		die("Connection failed: " . $conn->connection_error);
-	}
-	
-	function verify_cookie($conn, $username, $auth){
-		$stmt = $conn->prepare("SELECT * FROM accounts WHERE username=?");
-		$stmt->bind_param("s", $username);
-		$stmt->execute();
-		$result = $stmt->get_result();
-		if($result->num_rows > 0) {
-			while($row = $result->fetch_assoc()) {
-				$input_user = $row["username"];
-				$table_auth = $row["auth"];
-			}
-			if($table_auth == $auth){
-				return true;
-			} else {
-				return false;
-			}
-		} else {
-			return false;
-		}
-		return false;
-		$stmt->close();
-	}
-
-
-    // checks for valid cookie, if none, redirect to login page
-    if (!isset($_COOKIE['username']) || !isset($_COOKIE['auth']) || !verify_cookie($conn, $_COOKIE['username'], $_COOKIE['auth'])) {
-        header("Location: login_page.php");
-        exit();
-    }
-	
-	$conn->close();
-	?>
-
-    <div class="bg-image"></div> <!-- Background image -->
-
-    <div class="button-bar"> <!-- Button Bar -->
-        <div class="logo">
-            <img src="Front-end/images/logo.jpg" alt="Team Plant Logo">
-            <span>Team Plant</span>
-        </div>
-        <nav>
-            <ul>
-                <li><a href="https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442k/">Home</a></li>
-                <li><a href="">About</a></li>
-                <li><a href="">My Favorites</a></li>
-                <li><a href="https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442k/settings_page.php">Account</a></li>
-            </ul>
-        </nav>
-
-        <div class="content">
-            <div class="textbox">
-                <h1>Results</h1>
-                <p>A collection of plants hand-tailored to your exact location.</p>
-
-                <form method="post" class="zip-code-form">
-                    <input type="text" id="zip-code-input" placeholder="Enter Zip Code" class="work-sans-text" name="zip" value="">
-                    <h1 style="padding-left: 50px; font-size: 15px;">
-<label for="habit">Growth habit filter:</label>
-  <select name="habit" id="habit">
-    <option value="None">None</option>
-    <option value="Forb/herb">Forb/herb</option>
-    <option value="Graminoid">Graminoid</option>
-    <option value="Lichenous">Lichenous</option>
-    <option value="Nonvascular">Nonvascular</option>
-    <option value="Shrub">Shrub</option>
-    <option value="Subshrub">Subshrub</option>
-    <option value="Tree">Tree</option>
-    <option value="Vine">Vine</option>
-  </select>
-<br>
-<label for="rarity">Endangered/Threatened filter:</label>
-<select name="rarity" id="rarity">
-  <option value="None">None</option>
-  <option value="Endangered">Endangered</option>
-  <option value="Threatened">Threatened</option>
-</select>
-<br>
-<label for="invasive">Invasive filter:</label>
-<select name="invasive" id="invasive">
-  <option value="None">None</option>
-  <option value="Invasive">Invasive</option>
-  <option value="Potentially Invasive">Potentially Invasive</option>
-</select>
-<br>
-</h1>
-                    <button type="submit" name="recommend_button" class="button work-sans-text">GO!</button>
+  $f_size = sizeof($_SESSION['filter']);
+  $max_page = ceil($f_size/10);
+  if($page > $max_page){
+    $_SESSION['page'] = $max_page;
+    $page = $max_page;
+  }
+  $zip = $_SESSION['zip'];
+  $text = "Results for " . $zip . ":";
+  $plants = $_SESSION['plants'];
+  $latin = $_SESSION['latin'];
+  $habit = $_SESSION['habit'];
+  $rarity = $_SESSION['rarity'];
+  $invasive = $_SESSION['invasive'];
+  $filter = $_SESSION['filter'];
+  $symbol = $_SESSION['symbol'];
+  ?>
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+<div class="table-container">
+    <table class="styled-table">
+        <tr class="header-row">
+            <td class="multi-line">Common Name</td>
+            <td class="multi-line">Scientific Name</td>
+            <td class="multi-line">Growth Habit</td>
+            <td class="multi-line">Rarity</td>
+            <td class="multi-line">Invasive</td>
+            <td class="multi-line">Plant Guide</td>
+            <td class="multi-line">Fact Sheet</td>
+            <td class="multi-line">Favorite</td>
+        </tr>
+        <?php 
+        $count = 0;
+        $min = ($page - 1) * 10; 
+        $max = $min + 10;
+        $button_count = 0;
+        foreach($filter as $i) : 
+        $count++;
+        if($count <= $min || $count > $max){
+          continue;
+        }
+        if($count > $max){
+          break;
+        }        
+        ?>
+        <?php $pgLink = "https://plants.usda.gov/DocumentLibrary/plantguide/pdf/pg_" . $symbol[$i] . ".pdf"; ?>
+        <?php $fsLink = "https://plants.usda.gov/DocumentLibrary/factsheet/pdf/fs_" . $symbol[$i] . ".pdf"; ?>
+        <tr>
+            <td class="multi-line"><?php echo "$plants[$i] <br>";?></td>
+            <td class="multi-line"><?php echo "$latin[$i] <br>";?></td>
+            <td class="multi-line"><?php echo "$habit[$i] <br>";?></td>
+            <td class="multi-line"><?php echo "$rarity[$i] <br>";?></td>
+            <td class="multi-line"><?php echo "$invasive[$i] <br>";?></td>
+            <?php if (in_array("Content-Type: application/pdf", get_headers($pgLink))) { ?>
+              <td class="multi-line"><?php echo "<a href=$pgLink>Link Available</a>"; ?></td>
+            <?php }else{ ?>
+              <td class="multi-line"><?php echo "Link Unavailable"; ?></td>
+            <?php } ?>
+            <?php if (in_array("Content-Type: application/pdf", get_headers($fsLink))) { ?>
+              <td class="multi-line"><?php echo "<a href=$fsLink>Link Available</a>"; ?></td>
+            <?php }else{ ?>
+              <td class="multi-line"><?php echo "Link Unavailable"; ?></td>
+            <?php } ?>
+            <td>
+                <form method="post">
+                    <input type="hidden" name="favorite" value="<?php echo $button_count ?>">
+                    
+                    <input type="image" src="Front-end/images/heart.png" class="heart-button" alt="Favorite">
                 </form>
+            </td>
+</tr>
+	<?php $button_count++; ?>	
+        <?php endforeach; ?>
+    </table>
+    <br><br>
+            <div style="display: flex; align-items: center; justify-content: center;">
+                        <?php if($page > 1){ ?>
+            <form method="post">
+                <button type="submit" name="prev_page" class="button work-sans-text square-button">&lt;</button>
+            </form>
+            <?php } else { ?>
+            <div class="button non-clickable-button"></div>
+            <?php } ?>
 
-            </div>
+            <p class="source-sans-text" style="text-align: center; padding-left: 20px; padding-right: 20px;">Page <?php echo $page; ?></p>
 
-        </div>
+            <?php if($page < $max_page){ ?>
+            <form method="post">
+                <button type="submit" name="next_page" class="button work-sans-text square-button">&gt;</button>
+            </form>
+            <?php } else { ?>
+            <div class="button non-clickable-button"></div>
+            <?php } ?>
 
-
+      </div>
+    <br><br>
     </div>
 
+  <?php
+  return $text;
+}
 
 
+$cBut = 0;
 
+if(array_key_exists("favorite", $_POST)){
+  $cBut = intval($_POST['favorite']);
+  addFavorite($conn, $cBut);
+  $text = display_table($_SESSION['page']);
+}
+function addFavorite($conn, $cBut){
+  //re-declared these here to resolve scoping error
+    $commonName = array();
+    $latinName = array();
+    $gHabit = array();
+    $rarity = array();
+    $invasive = array();
+    $pGuide = "";
+    $fSheet = "";
+    $symbol = array();
+    //end
+    $user = $_COOKIE['username'];
+    $stmt = $conn->prepare("SELECT * FROM favorites WHERE username=?");
+    $stmt->bind_param("s", $user);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    if($result->num_rows == 0){
+        $stmt->close();
+        $stmt = $conn->prepare("INSERT INTO favorites (username, common_name, scientific_name, growth_habit, rarity, invasive, plant_guide, fact_sheet, symbol) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt->bind_param("sssssssss", $user, $commonName, $latinName, $gHabit, $rarity, $invasive, $pGuide, $fSheet, $symbol);
+        $user = $_COOKIE['username'];
+        $commonName = $_SESSION['plants'][$cBut];
+        $latinName = $_SESSION['latin'][$cBut];
+        $gHabit = $_SESSION['habit'][$cBut];
+        $rarity = $_SESSION['rarity'][$cBut];
+        $invasive = $_SESSION['invasive'][$cBut];
+        $pGuide = "none";
+        $fSheet = "none";
+        $symbol = $_SESSION['symbol'][$cBut];
+        $stmt->execute();
+        echo "favorite added";
+        $stmt->close();
+        return;
+    }else{
+        while($row = $result->fetch_assoc()) {
+            if($row["symbol"] == $_SESSION["symbol"][$cBut]){
+                echo "Already a favorite!";
+                $stmt->close();
+                return;
+            }
+        }
+        $stmt->close();
+        $stmt = $conn->prepare("INSERT INTO favorites (username, common_name, scientific_name, growth_habit, rarity, invasive, plant_guide, fact_sheet, symbol) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt->bind_param("sssssssss", $user, $commonName, $latinName, $gHabit, $rarity, $invasive, $pGuide, $fSheet, $symbol);
+        $user = $_COOKIE['username'];
+        $commonName = $_SESSION['plants'][$cBut];
+        $latinName = $_SESSION['latin'][$cBut];
+        $gHabit = $_SESSION['habit'][$cBut];
+        $rarity = $_SESSION['rarity'][$cBut];
+        $invasive = $_SESSION['invasive'][$cBut];
+        $pGuide = "none";
+        $fSheet = "none";
+        $symbol = $_SESSION['symbol'][$cBut];
+        $stmt->execute();
+        echo "favorite added";
+        $stmt->close();
+        return;
+    }
+}
+$conn->close();
+?>
+
+<div class="button-bar"> <!-- Button Bar -->
+	<div class="logo">
+		<img src="Front-end/images/logo.jpg" alt="Team Plant Logo">
+		<span>Team Plant</span>
+	</div>
+	<nav>
+		<ul>
+			<li><a href="https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442k/">Home</a></li>
+			<li><a href="">About</a></li>
+			<li><a href="https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442k/favorites_page.php">My Favorites</a></li>
+			<li><a href="https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442k/settings_page.php">Account</a></li>
+		</ul>
+	</nav>
+
+    <div class="text-boxes"> <!-- Text boxes above zip code box -->
+            
+        <div class="text-box">
+          <p class="work-sans-text">Results</p>
+        </div>
+        <div class="text-box">
+          <p class="source-sans-text">A collection of plants hand-tailored to your exact location.</p>
+        </div>
+        <form id="recommendation-form" method="post" class="zip-code-box">
+  <input type="text" id="zip-code-box-input" placeholder="Enter Zip Code" class="work-sans-text" name="zip" value="">
+  
+  <div id="hiddenselect" style="display: none; position: absolute; background-color: #82ac69; z-index: 1; top: 100%; width: 131px; left: 263px; font-family: 'Work Sans', sans-serif; border-radius: 5px; margin-top: 13px" class="select-with-shadow">
+    <h1 style="font-size: 14px; padding: 10px; box-sizing: border-box;">
+      <label for="habit" style="color: white">Growth Habit:</label>
+      <select name="habit" id="habit" class="select-with-shadow" style="width: 100%; margin-top: 5px; margin-bottom: 10px; font-family: 'Work Sans', sans-serif;">
+        <option style=""value="None">No Selection</option>
+        <option value="Forb/herb">Forb/herb</option>
+        <option value="Graminoid">Graminoid</option>
+        <option value="Lichenous">Lichenous</option>
+        <option value="Nonvascular">Nonvascular</option>
+        <option value="Shrub">Shrub</option>
+        <option value="Subshrub">Subshrub</option>
+        <option value="Tree">Tree</option>
+        <option value="Vine">Vine</option>
+      </select>
+      <br>
+      <label for="rarity" style="color: white">Rarity:</label>
+      <select name="rarity" id="rarity" class="select-with-shadow" style="width: 100%; margin-top: 5px; margin-bottom: 10px; font-family: 'Work Sans', sans-serif;">
+        <option value="None">No Selection</option>
+        <option value="Endangered">Endangered</option>
+        <option value="Threatened">Threatened</option>
+      </select>
+      <br>
+      <label for="invasive" style="color: white">Invasiveness:</label>
+      <select name="invasive" class="select-with-shadow" id="invasive" style="width: 100%; margin-top: 5px; margin-bottom: 5px; font-family: 'Work Sans', sans-serif;">
+        <option value="None">No Selection</option>
+        <option value="Invasive">Invasive</option>
+        <option value="Potentially Invasive">Potentially</option>
+      </select>
+    </h1>
+  </div>
+
+<button type="button" id="filters" style="background-color: #000000; padding: 17px 40px" class="button work-sans-text" onclick="toggleFilters()" onmouseover="this.style.backgroundColor='#82ac69'" onmouseout="this.style.backgroundColor='#000000'">Filters</button>
+
+  <button type="submit" style="margin-left: 10px" name="recommend_button" class="button work-sans-text">GO!</button>
+</form>
+
+        <div class="text-box2" style="margin-top: 110px">
+          <p class="source-sans-text">Before clicking "GO!", enter your zip code and select the filters you would like to apply!</p>
+        </div>
+
+        <div class="text-box">
+        <br>
+          <p class="work-sans-text" style="font-size: 44px; margin-bottom: 10px; font-weight: bold"><?php echo $text; ?></p>
+        </div>
+        </div>
+        
+    </div>
+</div>
+
+
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const form = document.getElementById("recommendation-form");
+
+        form.addEventListener("submit", function () {
+            // Create an overlay container
+            const overlayContainer = document.createElement("div");
+            overlayContainer.style.position = "fixed";
+            overlayContainer.style.top = "0";
+            overlayContainer.style.left = "0";
+            overlayContainer.style.width = "100%";
+            overlayContainer.style.height = "100%";
+            overlayContainer.style.backgroundColor = "#f4ffee";
+            overlayContainer.style.zIndex = "9998"; // Adjust the z-index as needed
+
+            // Create the header bar element
+            const headerBar = document.createElement("div");
+            headerBar.className = "button-bar2";
+            headerBar.innerHTML = `
+                <div class="logo">
+                    <img src="Front-end/images/logo.jpg" alt="Team Plant Logo">
+                    <span>Team Plant</span>
+                </div>
+            `;
+
+            headerBar.style.zIndex = "9999";
+
+            // Append the header bar to the overlay container
+            overlayContainer.appendChild(headerBar);
+
+            // Create the loading gif element
+            const loadingGif = document.createElement("img");
+            loadingGif.src = "Front-end/images/green_style.gif";
+            loadingGif.alt = "Loading GIF";
+
+            // Apply styles to the loading gif
+            loadingGif.style.position = "absolute";
+            loadingGif.style.top = "50%";
+            loadingGif.style.left = "50%";
+            loadingGif.style.transform = "translate(-50%, -50%)";
+            loadingGif.style.zIndex = "9999";
+            loadingGif.style.width = "350px";
+            loadingGif.style.height = "350px";
+
+            // Append the loading gif to the overlay container
+            overlayContainer.appendChild(loadingGif);
+
+            const logo = document.createElement("img");
+            logo.src = "Front-end/images/logo2.png";
+            logo.alt = "Logo";
+
+            // Apply styles to the logo
+            logo.style.position = "absolute";
+            logo.style.top = "50%";
+            logo.style.left = "50%";
+            logo.style.transform = "translate(-50%, -50%)";
+            logo.style.zIndex = "9999";
+            logo.style.width = "85px";
+            logo.style.height = "85px";
+
+            // Append the logo to the overlay container
+            overlayContainer.appendChild(logo);
+
+            // Create an array of strings
+            const randomStrings = [
+                "Exploring the green wonders near you. Just a moment!",
+                "Cultivating the best matches for your zip code. Hang tight!",
+                "Harvesting the most suitable plants for your zip code. Almost done!",
+                "Growing personalized plant suggestions for your location. Patience, please!",
+                "Planting the perfect recommendations for your zip code. Almost there!"
+            ];
+
+            // Choose a random string from the array
+            const randomString = randomStrings[Math.floor(Math.random() * randomStrings.length)];
+
+            // Create a new element for the random string
+            const randomStringElement = document.createElement("p");
+            randomStringElement.textContent = randomString;
+            randomStringElement.style.position = "absolute";
+            randomStringElement.style.top = "80%";
+            randomStringElement.style.left = "50%";
+            randomStringElement.style.transform = "translate(-50%, -50%)";
+            randomStringElement.style.textAlign = "center";
+            randomStringElement.style.fontFamily = "'Work Sans', sans-serif";
+            randomStringElement.style.fontSize = "18px";
+            randomStringElement.style.color = "#222";
+
+            // Append the random string element to the overlay container
+            overlayContainer.appendChild(randomStringElement);
+
+            // Append the overlay container to the body
+            document.body.appendChild(overlayContainer);
+
+            // Disable scrolling on the original page
+            document.body.style.overflow = "hidden";
+
+        });
+    });
+</script>
 
 </body>
 </html>

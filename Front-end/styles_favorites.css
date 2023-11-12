@@ -1,0 +1,164 @@
+body { /* body format */
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+    position: relative;
+    background-image: url('images/background.jpg');
+    background-attachment: fixed; 
+    background-size: cover;
+}
+
+.button-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: rgba(185, 224, 162, 1); /* Set the background color with transparency */
+    padding: 15px 20px; /* Adjust the padding (top and bottom) to make it taller */
+    height: auto; /* Remove the height property to allow the bar to grow with content */
+    position: absolute;
+    top: 35px; /* Adjust the top position to 100 pixels */
+    left: 0;
+    right: 0;
+    z-index: 2;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1); /* Add a subtle box-shadow for depth */
+    background: linear-gradient(180deg, rgba(185, 224, 162, 1) 0%, rgba(185, 224, 162, 0.8) 100%); /* Add a subtle background gradient */
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    color: rgb(0, 0, 0); /* Set the text color without transparency */
+    font-weight: 400; /* Optionally, make the text bold */
+    font-family: 'Poppins', sans-serif; /* Set the desired font-family for text */
+}
+
+.logo img {
+    width: 30px; /* Adjust the size of the logo */
+    height: 30px;
+    margin-right: 10px; /* Add some spacing between the logo and text */
+}
+
+nav ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+nav li {
+    display: inline;
+    margin-right: 20px; /* Add spacing between navigation links */
+}
+
+nav a {
+    text-decoration: none;
+    color: #000000; /* Set your desired link color */
+    font-weight: 400; /* Optionally, make the links bold */
+    font-family: 'Work Sans', sans-serif; /* Apply the Work Sans font */
+    transition: color 0.3s; /* Add a smooth transition for color changes */
+}
+
+/* Add hover effect */
+nav a:hover {
+    color: #45a049; /* Set the desired link color on hover */
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  .zip-code-form {
+    position: absolute;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.zip-code-form input[type="text"] {
+    padding: 17px;
+    border: none;
+    outline: none;
+    font-family: 'Work Sans', sans-serif;
+    font-size: 16px;
+    color: #000000;
+    width: 250px;
+    box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.5);
+    transition: box-shadow 0.3s;
+}
+
+.zip-code-form button {
+    padding: 17px 25px;
+    background-color: #b9e0a2;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    font-family: 'Work Sans', sans-serif;
+    font-size: 16px;
+    color: #ffffff;
+    margin-left: 10px;
+    box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.5);
+    transition: box-shadow 0.3s;
+}
+
+.zip-code-form button:hover {
+    background-color: #45a049;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .zip-code-form {
+        top: calc(100% + 40px); /* Adjust vertical position */
+    }
+}
+
+.content {
+    position: absolute;
+    top: 50%;
+    left: 70px; /* Adjust the left positioning as needed */
+    transform: translateY(-50%);
+    text-align: left;
+    z-index: 3; /* Adjust the z-index to ensure it's on top of other content */
+}
+
+.text-boxes { /* text boxes above zip code box */
+    position: absolute;
+    top: 150px;
+    left: 10%;
+    z-index: 3;
+  }
+  
+.text-box {
+    margin-bottom: 15px; /* Reduce the gap between text boxes */
+  }
+  
+.work-sans-text {
+    font-family: 'Work Sans', sans-serif;
+    font-size: 56px;
+    font-weight: 200;
+    color: #000000; /* Text color (black) */
+  }
+  
+.source-sans-text {
+    font-family: 'Work Sans', sans-serif;
+    font-size: 18px;
+    font-weight: 200;
+    color: #000000; /* Text color (black) */
+  }
+
+/* Responsive styles */
+@media (max-width: 768px) {
+    .content {
+        left: 10px; /* Adjust the left positioning for smaller screens */
+    }
+    .textbox {
+        padding: 10px;
+    }
+    .textbox h1 {
+        font-size: 36px;
+    }
+    .textbox p {
+        font-size: 20px;
+    }
+}

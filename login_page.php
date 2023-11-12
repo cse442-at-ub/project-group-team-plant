@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Team Plant</title>
-    <link rel="stylesheet" type="text/css" href="Front-end/styles.css">
+    <link rel="stylesheet" type="text/css" href="styles_login.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;600&display=swap" rel="stylesheet">
 </head>
@@ -47,8 +47,8 @@
 			header("Location: https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442k");
 			return;
 		}
-		$username = strval($_POST['new_user']);
-		$password = strval($_POST['new_pass']);
+		$username = htmlspecialchars(strval($_POST['new_user']), ENT_QUOTES, 'UTF-8');
+		$password = htmlspecialchars(strval($_POST['new_pass']), ENT_QUOTES, 'UTF-8');
 		//header('Refresh:0; Location: https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442k/loginsignuppage.php');
 		if ($username == ""){
 			echo "A valid username was not entered.";
@@ -84,8 +84,8 @@
 			header("Location: https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442k");
 			return;
 		}
-		$username = strval($_POST['log_user']);
-		$password = strval($_POST['log_pass']);
+		$username = htmlspecialchars(strval($_POST['log_user']), ENT_QUOTES, 'UTF-8');
+		$password = htmlspecialchars(strval($_POST['log_pass']), ENT_QUOTES, 'UTF-8');
 		//header('Refresh:0; Location: https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442k/loginsignuppage.php');
 		$stmt = $conn->prepare("SELECT * FROM accounts WHERE username=?");
 		$stmt->bind_param("s", $username);
@@ -163,58 +163,58 @@
 		<span>Team Plant</span>
 	</div>
 	<nav>
+		<ul>
+			<li><a href="https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442k/">Home</a></li>
+			<li><a href="">About</a></li>
+			<li><a href="">My Favorites</a></li>
+			<li><a href=""><b>Account</b></a></li>
+		</ul>
 	</nav>
 
-	<div class="content">
-		<div class="textbox">
-			<h1>Login or Sign Up</h1>
-			<p>Create a new account or login to your existing account</p>
-		</div>
+    <div class="text-boxes"> <!-- Text boxes above zip code box -->
+            
+        <div class="text-box">
+          <p class="work-sans-text" style="margin-top: 40px;">Login or Sign Up</p>
+        </div>
+        <div class="text-box">
+          <p class="source-sans-text">Get started by creating a new account or log in to access your existing account.</p>
+        </div>
 
-		<div class="settings">
-			<div class="green-box">
+        <div class="settings-box">
+          <form method="post">
+          <h2 class="work-sans-text">Login</h2>
+          <div class="setting">
+              <label for="username">Username:</label>
+              <input type="text" id="username" placeholder="Enter your username" name="log_user">
+          </div>
+          <div class="setting">
+              <label for="current-password">Password:</label>
+              <input type="password" id="current-password" placeholder="Enter your password" name="log_pass">
+          </div>
+          <button type=submit class="green-button" name="login">Login</button>
+        </form>
+      </div>
 
-				<h2>Login</h2>
-				<form method="post">
-					
-					<div class="input-container">
-						<label>Username</label>
-						<input type="text" placeholder="Enter your username" name="log_user">
-					</div>
-					<div class="input-container">
-						<label>Password</label>
-						<input type="password" placeholder="Enter your password" name="log_pass">
-					</div>
-					<div class="input-container">
-						<button type="submit" class="save-button" name="login">Login</button>
-					</div>
-				</form>
-			</div>
 
-			<div class="green-box">
-
-				<h2>Create New Account</h2>
-				<form method="post">
-					
-					<div class="input-container">
-						<label>Create Username</label>
-						<input type="text" placeholder="Create your new username" name="new_user">
-					</div>
-					<div class="input-container">
-						<label>Create Password</label>
-						<input type="password" placeholder="Create your new password" name="new_pass">
-					</div>
-					<div class="input-container">
-						<button type="submit" class="save-button" name="signup">Sign Up</button>
-					</div>
-				</form>
-			</div>
-
-		</div>
-
-	</div>
+      <div class="settings-box">
+        <form method="post">
+        <h2 class="work-sans-text">Create New Account</h2>
+        <div class="setting">
+            <label for="username">New Username:</label>
+            <input type="text" id="username" placeholder="Enter your new username" name="new_user">
+        </div>
+        <div class="setting">
+            <label for="current-password">New Password:</label>
+            <input type="password" id="current-password" placeholder="Enter your new password" name="new_pass">
+        </div>
+        <button type="submit" class="green-button" name="signup">Sign Up</button>
+      </form>
+    </div>
+        
+    </div>
 
 </div>
+
 
 </body>
 </html>

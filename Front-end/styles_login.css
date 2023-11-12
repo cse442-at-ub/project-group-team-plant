@@ -3,26 +3,9 @@ body { /* body format */
     padding: 0;
     overflow-x: hidden;
     position: relative;
-}
-
-.bg-image { /* background image */
     background-image: url('images/background.jpg');
+    background-attachment: fixed; 
     background-size: cover;
-    background-repeat: no-repeat;
-    background-attachment: scroll;
-    width: 100vw;
-    height: 100vh;
-}
-
-.bg-image::before { /* adds the soft light filter */
-    content: "";
-    background: rgba(255, 255, 255, 0.7);
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 1;
 }
 
 .button-bar {
@@ -85,44 +68,6 @@ nav a:hover {
     box-sizing: border-box;
   }
 
-  .zip-code-form {
-    position: absolute;
-    z-index: 3;
-    display: flex;
-    align-items: center;
-    margin-top: 20px;
-}
-
-.zip-code-form input[type="text"] {
-    padding: 17px;
-    border: none;
-    outline: none;
-    font-family: 'Work Sans', sans-serif;
-    font-size: 16px;
-    color: #000000;
-    width: 250px;
-    box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.5);
-    transition: box-shadow 0.3s;
-}
-
-.zip-code-form button {
-    padding: 17px 25px;
-    background-color: #b9e0a2;
-    border: none;
-    outline: none;
-    cursor: pointer;
-    font-family: 'Work Sans', sans-serif;
-    font-size: 16px;
-    color: #ffffff;
-    margin-left: 10px;
-    box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.5);
-    transition: box-shadow 0.3s;
-}
-
-.zip-code-form button:hover {
-    background-color: #45a049;
-}
-
 /* Responsive adjustments */
 @media (max-width: 768px) {
     .zip-code-form {
@@ -130,36 +75,30 @@ nav a:hover {
     }
 }
 
-.content {
+.text-boxes { /* text boxes above zip code box */
     position: absolute;
-    top: 50%;
-    left: 70px; /* Adjust the left positioning as needed */
-    transform: translateY(-50%);
-    text-align: left;
-    z-index: 3; /* Adjust the z-index to ensure it's on top of other content */
-}
-
-/* Styles for the text box */
-.textbox {
-    padding: 20px;
-    border-radius: 10px;
-    margin-top: 300px;
-}
-
-/* Header style */
-.textbox h1 {
+    top: 120px;
+    left: 10%;
+    z-index: 3;
+  }
+  
+.text-box {
+    margin-bottom: 15px; /* Reduce the gap between text boxes */
+  }
+  
+.work-sans-text {
     font-family: 'Work Sans', sans-serif;
-    font-size: 45px;
-    margin: 0;
-}
-
-/* Description style */
-.textbox p {
-    font-family: 'Source Sans Pro', sans-serif;
-    font-size: 20px;
-    margin-top: 10px;
+    font-size: 56px;
     font-weight: 200;
-}
+    color: #000000; /* Text color (black) */
+  }
+  
+.source-sans-text {
+    font-family: 'Work Sans', sans-serif;
+    font-size: 18px;
+    font-weight: 200;
+    color: #000000; /* Text color (black) */
+  }
 
 /* Responsive styles */
 @media (max-width: 768px) {
@@ -175,4 +114,74 @@ nav a:hover {
     .textbox p {
         font-size: 20px;
     }
+}
+
+.settings-box {
+    display: inline-block; /* Change to inline-block */
+    background-color: rgba(185, 224, 162, 1);
+    border-radius: 8px;
+    padding: 30px;
+    margin-left: 0px;
+    margin-top: 40px;
+    margin-right: 40px;
+    flex: 1;
+    width: 300px;
+    box-sizing: border-box; /* Include padding and border in the box sizing */
+    box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.2); /* Add a drop shadow effect */
+
+}
+
+.settings-box h2 {
+    font-family: 'Work Sans', sans-serif;
+    font-weight: bold;
+    font-size: 20px;
+    margin-bottom: 10px;
+}
+
+.setting {
+    margin: 10px 0;
+}
+
+.setting label {
+    font-family: 'Work Sans', sans-serif;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.setting input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    font-family: 'Work Sans', sans-serif;
+    margin-top: 5px;
+    box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.2); /* Add a drop shadow effect */
+}
+
+.green-button {
+    background-color: #45a049;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    margin-top: 5px;
+    font-family: 'Work Sans', sans-serif;
+    cursor: pointer;
+    width: 100%;
+    transition: background-color 0.3s; /* Add a transition for the background color */
+
+}
+
+/* Add a hover effect for the green button */
+.green-button:hover {
+    background-color: #358c3c; /* Change the background color on hover */
+}
+
+/* Hide input placeholders when focused */
+.setting input::placeholder {
+    transition: opacity 0.3s ease;
+}
+
+.setting input:focus::placeholder {
+    opacity: 0;
 }
