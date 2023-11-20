@@ -109,6 +109,8 @@ session_start();
 
         $curHabit = $habit[0];
 
+        $habitCheck = True;
+
 
         for ($x = 0; $x < count($habit); $x++) {
             if ($habit[$x] == "Forb/herb"){
@@ -135,6 +137,12 @@ session_start();
             if ($habit[$x] == "Subshrub"){
                 $curHabit = $habit[$x];
             }
+        }
+
+
+        if($curHabit === "N/A"){
+          $habitCheck = False;
+          $text = "No Similar Plants Could Be Found! Please try favoriting plants with a growth habit.";
         }
 
         //GET SIMILAR PLANTS
@@ -278,7 +286,7 @@ session_start();
       <h1 style="font-family: 'Poppins', sans-serif; padding-left: 190px;"><?php echo $text; ?></h1>
       <br>
       <div>
-      <?php if($fav){ # BEGIN FAV IF - ONLY SHOW PLANTS IF THERE IS A FAVORITE ?>
+      <?php if($fav && $habitCheck){ # BEGIN FAV IF - ONLY SHOW PLANTS IF THERE IS A FAVORITE AND HABIT?>
         <table class="pics">
             <tr>
               <?php if (is_array(getimagesize($images[$num0]))) { ?>
@@ -311,6 +319,27 @@ session_start();
         </table>
         <?php } # END FAV IF ?>
       </div>
+    </footer>
+
+    <footer><hr>
+      <br><br><br>
+      <h1 style="font-family: 'Poppins', sans-serif; padding-left: 190px;">Seed Vendors</h1>
+      <br>
+      <div class="text-box" style="padding-left: 190px;">
+          <p class="source-sans-text">Purchase a diverse array of high-quality seeds, accompanied by detailed imformation and guidance for successful cultivation.</p>
+          <br>
+          <p style="font-family: 'Poppins', sans-serif;"><b>Best Overall:</b> <a href="https://www.burpee.com/" target="_blank">Burpee</a></p><br>
+            <p style="font-family: 'Poppins', sans-serif;"><b>Best for Vegetables:</b> <a href="https://www.johnnyseeds.com/" target="_blank">Johnny's Select Seeds</a></p><br>
+                <p style="font-family: 'Poppins', sans-serif;"><b>Best for Flowers:</b> <a href="https://www.edenbrothers.com/" target="_blank">Eden Brothers</a></p><br>
+                    <p style="font-family: 'Poppins', sans-serif;"><b>Best Budget-Priced Seeds:</b> <a href="https://ferrymorse.com/" target="_blank">Ferry-Morse</a></p><br>
+                        <p style="font-family: 'Poppins', sans-serif;"><b>Best for Direct Seeding:</b> <a href="https://parkseed.com/" target="_blank">Park Seed</a></p><br>
+                            <p style="font-family: 'Poppins', sans-serif;"><b>Best Sowing Instructions:</b> <a href="https://www.botanicalinterests.com/" target="_blank">Botanical Interests</a></p><br>
+                                <p style="font-family: 'Poppins', sans-serif;"><b>Best for Rate Seeds:</b> <a href="https://www.rareseeds.com/" target="_blank">Baker Creek Heirloom Seeds</a></p><br>
+                                    <p style="font-family: 'Poppins', sans-serif;"><b>Best for Herbs:</b> <a href="https://www.reneesgarden.com/" target="_blank">Renee's Garden</a></p><br>
+                                        <p style="font-family: 'Poppins', sans-serif;"><b>Best for Heirloom Seeds:</b> <a href="https://seedsavers.org/" target="_blank">Seed Savers Exchange</a></p><br>
+                                            <p style="font-family: 'Poppins', sans-serif;"><b>Best Organic Seeds:</b> <a href="https://territorialseed.com/" target="_blank">Territorial Seed Company</a></p><br>
+                                                <p style="font-family: 'Poppins', sans-serif;"><b>Source:</b> <a href="https://www.thepioneerwoman.com/home-lifestyle/gardening/g39682996/best-places-to-buy-seeds/" target="_blank">https://www.thepioneerwoman.com/home-lifestyle/gardening/g39682996/best-places-to-buy-seeds/</a></p><br><br><br>
+        </div>
     </footer>
 
 

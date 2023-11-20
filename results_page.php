@@ -87,18 +87,18 @@ session_start();
 
   if(array_key_exists("recommend_button", $_POST)) {
     $_POST['zip'] = htmlspecialchars($_POST['zip']);
-    $text = zip_search();
+    $text = zip_search($conn);
   }
   if(array_key_exists("next_page", $_POST)) {
     $_SESSION['page']++;
-    $text = display_table($_SESSION['page']);
+    $text = display_table($_SESSION['page'], $conn);
   }
   if(array_key_exists("prev_page", $_POST)) {
     $_SESSION['page']--;
-    $text = display_table($_SESSION['page']);
+    $text = display_table($_SESSION['page'], $conn);
   }
 
-  function zip_search(){ 
+  function zip_search($conn){ 
       $fips = "";
       $state_id = "";
       $zip = htmlspecialchars(strval($_POST['zip']), ENT_QUOTES, 'UTF-8');
@@ -321,13 +321,13 @@ session_start();
       $_SESSION['symbol'] = $printSymbol;
       $_SESSION['zip'] = $zip;
       $_SESSION['page'] = 1;
-      display_table(1);
+      display_table(1, $conn);
       $text = "Results for " . $zip . ":";
       return $text;
 }
 
 
-function display_table($page){
+function display_table($page, $conn){
   if($page < 1){
     $_SESSION['page'] = 1;
     $page = 1;
@@ -338,6 +338,20 @@ function display_table($page){
     $_SESSION['page'] = $max_page;
     $page = $max_page;
   }
+  $fav_symbol = array();
+
+  // FIND USER FAVORITES BY SYMBOL
+  $user = $_COOKIE['username'];
+  $stmt = $conn->prepare("SELECT * FROM favorites WHERE username=?");
+  $stmt->bind_param("s", $user);
+  $stmt->execute();
+  $result = $stmt->get_result();
+  if($result->num_rows > 0) {
+		while($row = mysqli_fetch_array($result)) {
+            $fav_symbol[] = $row['symbol'];
+		}
+  }
+  $stmt->close();
   $zip = $_SESSION['zip'];
   $text = "Results for " . $zip . ":";
   $plants = $_SESSION['plants'];
@@ -396,8 +410,11 @@ function display_table($page){
             <td>
                 <form method="post">
                     <input type="hidden" name="favorite" value="<?php echo $button_count ?>">
-                    
+                    <?php if(in_array($symbol[$i], $fav_symbol)){ ?>
                     <input type="image" src="Front-end/images/heart.png" class="heart-button" alt="Favorite">
+                    <?php } else { ?>
+                    <input type="image" src="Front-end/images/heart.png" class="heart-button" alt="Favorite">
+                    <?php } ?>
                 </form>
             </td>
 </tr>
@@ -438,7 +455,7 @@ $cBut = 0;
 if(array_key_exists("favorite", $_POST)){
   $cBut = intval($_POST['favorite']);
   addFavorite($conn, $cBut);
-  $text = display_table($_SESSION['page']);
+  $text = display_table($_SESSION['page'], $conn);
 }
 function addFavorite($conn, $cBut){
   //re-declared these here to resolve scoping error
