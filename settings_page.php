@@ -21,7 +21,7 @@
 	if ($conn->connection_error) {
 		die("Connection failed: " . $conn->connection_error);
 	}
-	
+
 
 	// checks for valid cookie, if none, redirect to login page
 	if (!isset($_COOKIE['username']) || !isset($_COOKIE['auth']) || !verify_cookie($conn, $_COOKIE['username'], $_COOKIE['auth'])) {
@@ -65,7 +65,7 @@
 			echo "Invalid input, please enter a different password.";
 			return;
     }
-	
+
 	$stmt = $conn->prepare("SELECT * FROM accounts WHERE username=?");
 	$stmt->bind_param("s", $username);
 	$stmt->execute();
@@ -84,7 +84,7 @@
 			$stmt->execute();
 			$stmt->close();
 			login_account($conn, $newusername, $password);
-		} 
+		}
 		if($t_username == $username){
 			echo "Username already taken";
 			return;
@@ -112,7 +112,7 @@
 			echo "Invalid input, please enter a different password.";
 			return;
     }
-	
+
 	$stmt = $conn->prepare("SELECT * FROM accounts WHERE username=?");
 	$stmt->bind_param("s", $username);
 	$stmt->execute();
@@ -205,8 +205,56 @@
 		$stmt->close();
 	}
 
-	$conn->close();
-	?>
+function sanitize_input($input) {
+    return htmlspecialchars(strval($input), ENT_QUOTES, 'UTF-8');
+}
+
+if (isset($_POST['change_picture'])) {
+    change_profile_picture($conn);
+}
+
+function change_profile_picture($conn)
+{
+    $username = sanitize_input($_COOKIE['username']);
+
+    if (isset($_FILES['profile_picture'])) {
+        $file_name = sanitize_input($_FILES['profile_picture']['name']);
+        $file_tmp = $_FILES['profile_picture']['tmp_name'];
+
+        $target_folder = "profile_pictures/";
+        $target_file = $target_folder . basename($file_name);
+
+        $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
+        $allowed_types = array("jpg", "jpeg", "png", "gif");
+
+        if (in_array($imageFileType, $allowed_types)) {
+            if (move_uploaded_file($file_tmp, $target_file)) {
+                $stmt = $conn->prepare("UPDATE accounts SET profile_picture=? WHERE username=?");
+                $stmt->bind_param("ss", $target_file, $username);
+                $stmt->execute();
+                $stmt->close();
+
+                echo "Profile picture updated successfully.";
+            } else {
+                echo "Failed to upload file.";
+            }
+        } else {
+            echo "Invalid file type. Allowed types are JPG, JPEG, PNG, GIF.";
+        }
+    } else {
+        echo "No file selected.";
+    }
+}
+$profile_picture = "";
+
+$username = $_COOKIE['username'];
+$stmt = $conn->prepare("SELECT profile_picture FROM accounts WHERE username = ?");
+$stmt->bind_param("s", $username);
+$stmt->execute();
+$stmt->bind_result($profile_picture);
+$stmt->fetch();
+$stmt->close();
+?>
 
 
 <div class="bg-image"></div> <!-- Background image -->
@@ -216,17 +264,18 @@
 		<img src="Front-end/images/logo.jpg" alt="Team Plant Logo">
 		<span>Team Plant</span>
 	</div>
-	<nav>
-		<ul>
-			<li><a href="https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442k/">Home</a></li>
-			<li><a href="">About</a></li>
-			<li><a href="https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442k/favorites_page.php">My Favorites</a></li>
-			<li><a href="https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442k/settings_page.php"><b>Account</b></a></li>
-		</ul>
-	</nav>
+  	<nav>
+  		<ul>
+  			<li><a href="https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442k/">Home</a></li>
+  			<li><a href="https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442k/about_page.php">About</a></li>
+  			<li><a href="https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442k/favorites_page.php">My Favorites</a></li>
+  			<li><a href="https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442k/settings_page.php"><b>Account</b></a></li>
+        <li><img src="<?php echo $profile_picture; ?>" alt="Profile Picture" width="40px" height="40px"></li>
+  		</ul>
+  	</nav>
 
     <div class="text-boxes"> <!-- Text boxes above zip code box -->
-            
+
         <div class="text-box">
           <p class="work-sans-text">Account Settings</p>
         </div>
@@ -285,14 +334,25 @@
       </form>
     </div>
 
-    
+    <div class="settings-box">
+    <form method="post" enctype="multipart/form-data">
+        <h2 class="work-sans-text">Change Profile Picture</h2>
+        <div class="setting">
+            <label for="profile-picture">Upload Profile Picture:</label>
+            <input type="file" id="profile-picture" name="profile_picture">
+        </div>
+        <button type="submit" class="green-button" name="change_picture">Upload Picture</button>
+    </form>
+    </div>
+
+
     <div class="settings-box">
       <form method="post">
       <h2 class="work-sans-text" style="margin-bottom: 236px;">Sign Out</h2>
       <button type="submit" class="green-button" name="sign_out">Sign Out</button>
     </form>
   </div>
-        
+
     </div>
 
 </div>
