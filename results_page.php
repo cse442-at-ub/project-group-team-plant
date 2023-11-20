@@ -409,9 +409,9 @@ function display_table($page, $conn){
             <?php } ?>
             <td>
                 <form method="post">
-                    <input type="hidden" name="favorite" value="<?php echo $button_count ?>">
+                    <input type="hidden" name="favorite" value="<?php echo $count-1 ?>">
                     <?php if(in_array($symbol[$i], $fav_symbol)){ ?>
-                    <input type="image" src="Front-end/images/heart.png" class="heart-button" alt="Favorite">
+                    <input type="image" src="fav_heart.png" class="heart-button" alt="Favorite">
                     <?php } else { ?>
                     <input type="image" src="Front-end/images/heart.png" class="heart-button" alt="Favorite">
                     <?php } ?>
