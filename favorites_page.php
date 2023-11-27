@@ -13,6 +13,18 @@ session_start();
     <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;600&display=swap" rel="stylesheet">
 </head>
 <body>
+    <script>
+        function toggleBlack(symbol) {
+            var g_name = "g_" + symbol;
+            var b_name = "b_" + symbol;
+            var g_heart = document.getElementById(g_name);
+            var b_heart = document.getElementById(b_name);
+
+            b_heart.style.visibility = "visible";
+            g_heart.style.visibility = "hidden";
+
+        }
+</script>
   <?php
   $server = "oceanus.cse.buffalo.edu";
 	$user = "sepalutr";
@@ -166,6 +178,16 @@ session_start();
     $num2 = rand(0, count($images)-1);
     $num3 = rand(0, count($images)-1);
 
+    $profile_picture = "";
+
+    $username = $_COOKIE['username'];
+    $stmt = $conn->prepare("SELECT profile_picture FROM accounts WHERE username = ?");
+    $stmt->bind_param("s", $username);
+    $stmt->execute();
+    $stmt->bind_result($profile_picture);
+    $stmt->fetch();
+    $stmt->close();
+
     $conn->close();
 
 ?>
@@ -178,9 +200,10 @@ session_start();
     <nav>
         <ul>
             <li><a href="https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442k/">Home</a></li>
-            <li><a href="">About</a></li>
+            <li><a href="https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442k/about_page.php">About</a></li>
             <li><a href="https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442k/favorites_page.php"><b>My Favorites</b></a></li>
             <li><a href="https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442k/settings_page.php">Account</a></li>
+            <li><img class="circle_img" src="<?php echo $profile_picture; ?>" alt="Profile Picture" width="40px" height="40px"></li>
         </ul>
     </nav>
 </div>
@@ -224,7 +247,11 @@ session_start();
             }
             for ($i = $min; $i < $max; $i++){
 
+                #<input type="hidden" name="unfavorite" style="position: absolute; top: 0; left: 0;" value="<?php echo $symbol[$i] ?&gt">
 
+                #<img id="g_<?php echo $symbol[$i] ?&gt" onclick="toggleBlack('<?php echo $symbol[$i] ?&gt')" style="visibility: visible; position: absolute; top: 0; left: 0;" src="brokenheart.png" class="heart-button" alt="Unfavorite">
+
+                #<img id="b_<?php echo $symbol[$i] ?&gt" style="visibility: hidden; position: absolute; top: 0; left: 0;" src="blackbrokenheart.png" class="heart-button" alt="Unfavorite">
 
             ?>
             <?php $pgLink = "https://plants.usda.gov/DocumentLibrary/plantguide/pdf/pg_" . $symbol[$i] . ".pdf"; ?>
@@ -244,11 +271,13 @@ session_start();
                   <td class="multi-line"><?php echo "<a href=$fsLink>Link Available</a>"; ?></td>
                 <?php }else{ ?>
                   <td class="multi-line"><?php echo "Link Unavailable"; ?></td>
-                  <?php } ?>
-                  <td><form method="post">
+                  <?php } # position: relative ?>
+                  <td style="position: relative"><form method="post">
                     <input type="hidden" name="unfavorite" value="<?php echo $symbol[$i] ?>">
 
-                    <input type="image" src="brokenheart.png" class="heart-button" alt="Unfavorite">
+                    <input id="g_<?php echo $symbol[$i] ?>" onclick="toggleBlack('<?php echo $symbol[$i] ?>')" type="image" style="visibility: visible; position: absolute; top: 0; left: 0;" src="brokenheart.png" class="heart-button" alt="Unfavorite">
+
+                    <input id="b_<?php echo $symbol[$i] ?>" type="image" style="visibility: hidden; position: absolute; top: 0; left: 0;" src="blackbrokenheart.png" class="heart-button" alt="Unfavorite">
                 </form></td>
             </tr>
             <?php
