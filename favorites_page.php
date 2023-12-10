@@ -9,11 +9,44 @@ session_start();
     <meta charset="UTF-8">
     <title>Team Plant</title>
     <link rel="stylesheet" type="text/css" href="style_fav.css">
+    <link rel="stylesheet" type="text/css" href="Front-end/styles_favorites_dark.css" id="dark-mode">
+
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <div class="toggle-container">
+
+<label class="switch">
+    <input type="checkbox" id="dark-mode-toggle">
+    <span class="slider"></span>
+</label>
+
+<div class="light">DARK</div>
+<div class="dark">LIGHT</div>
+</div>
+
+
 </head>
 <body>
+    <script>
+        function toggleBlack(symbol) {
+            var g_name = "g_" + symbol;
+            var b_name = "b_" + symbol;
+            var g_heart = document.getElementById(g_name);
+            var b_heart = document.getElementById(b_name);
+
+            b_heart.style.visibility = "visible";
+            g_heart.style.visibility = "hidden";
+
+        }
+</script>
   <?php
+  // based on original work from the PHP Laravel framework
+  if (!function_exists('str_contains')) {
+      function str_contains($haystack, $needle) {
+          return $needle !== '' && mb_strpos($haystack, $needle) !== false;
+      }
+  }
+
   $server = "oceanus.cse.buffalo.edu";
 	$user = "sepalutr";
 	$pass = "50338448";
@@ -109,32 +142,40 @@ session_start();
 
         $curHabit = $habit[0];
 
+        $habitCheck = True;
+
 
         for ($x = 0; $x < count($habit); $x++) {
-            if ($habit[$x] == "Forb/herb"){
-                $curHabit = $habit[$x];
+            if (str_contains($habit[$x], "Forb/herb")){
+                $curHabit = "Forb/herb";
             }
-            if ($habit[$x] == "Graminoid"){
-                $curHabit = $habit[$x];
+            if (str_contains($habit[$x], "Graminoid")){
+                $curHabit = "Graminoid";
             }
-            if ($habit[$x] == "Tree"){
-                $curHabit = $habit[$x];
+            if (str_contains($habit[$x], "Tree")){
+                $curHabit = "Tree";
             }
-            if ($habit[$x] == "Nonvascular"){
-                $curHabit = $habit[$x];
+            if (str_contains($habit[$x], "Nonvascular")){
+                $curHabit = "Nonvascular";
             }
-            if ($habit[$x] == "Lichenous"){
-                $curHabit = $habit[$x];
+            if (str_contains($habit[$x], "Lichenous")){
+                $curHabit = "Lichenous";
             }
-            if ($habit[$x] == "Vine"){
-                $curHabit = $habit[$x];
+            if (str_contains($habit[$x], "Vine")){
+                $curHabit = "Vine";
             }
-            if ($habit[$x] == "Shrub"){
-                $curHabit = $habit[$x];
+            if (str_contains($habit[$x], "Shrub")){
+                $curHabit = "Shrub";
             }
-            if ($habit[$x] == "Subshrub"){
-                $curHabit = $habit[$x];
+            if (str_contains($habit[$x], "Subshrub")){
+                $curHabit = "Subshrub";
             }
+        }
+
+
+        if($curHabit === "N/A"){
+          $habitCheck = False;
+          $text = "No Similar Plants Could Be Found! Please try favoriting plants with a growth habit.";
         }
 
         //GET SIMILAR PLANTS
@@ -147,16 +188,31 @@ session_start();
                         }
             }
         fclose($growth_search);
+        if(count($similarPlants) < 4){
+            $habitCheck = False;
+            $text = "No Similar Plants Could Be Found! Please try favoriting plants with a growth habit.";
+        }
         }
     }else{
         $fav = False;
         $text = "No Favorites Yet!";
     }
 
+
     $num0 = rand(0, count($images)-1);
     $num1 = rand(0, count($images)-1);
     $num2 = rand(0, count($images)-1);
     $num3 = rand(0, count($images)-1);
+
+    $profile_picture = "";
+
+    $username = $_COOKIE['username'];
+    $stmt = $conn->prepare("SELECT profile_picture FROM accounts WHERE username = ?");
+    $stmt->bind_param("s", $username);
+    $stmt->execute();
+    $stmt->bind_result($profile_picture);
+    $stmt->fetch();
+    $stmt->close();
 
     $conn->close();
 
@@ -170,9 +226,10 @@ session_start();
     <nav>
         <ul>
             <li><a href="https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442k/">Home</a></li>
-            <li><a href="">About</a></li>
+            <li><a href="https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442k/about_page.php">About</a></li>
             <li><a href="https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442k/favorites_page.php"><b>My Favorites</b></a></li>
             <li><a href="https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442k/settings_page.php">Account</a></li>
+            <li><img class="circle_img" src="<?php echo $profile_picture; ?>" alt="Profile Picture" width="40px" height="40px"></li>
         </ul>
     </nav>
 </div>
@@ -216,7 +273,11 @@ session_start();
             }
             for ($i = $min; $i < $max; $i++){
 
+                #<input type="hidden" name="unfavorite" style="position: absolute; top: 0; left: 0;" value="<?php echo $symbol[$i] ?&gt">
 
+                #<img id="g_<?php echo $symbol[$i] ?&gt" onclick="toggleBlack('<?php echo $symbol[$i] ?&gt')" style="visibility: visible; position: absolute; top: 0; left: 0;" src="brokenheart.png" class="heart-button" alt="Unfavorite">
+
+                #<img id="b_<?php echo $symbol[$i] ?&gt" style="visibility: hidden; position: absolute; top: 0; left: 0;" src="blackbrokenheart.png" class="heart-button" alt="Unfavorite">
 
             ?>
             <?php $pgLink = "https://plants.usda.gov/DocumentLibrary/plantguide/pdf/pg_" . $symbol[$i] . ".pdf"; ?>
@@ -236,11 +297,13 @@ session_start();
                   <td class="multi-line"><?php echo "<a href=$fsLink>Link Available</a>"; ?></td>
                 <?php }else{ ?>
                   <td class="multi-line"><?php echo "Link Unavailable"; ?></td>
-                  <?php } ?>
-                  <td><form method="post">
+                  <?php } # position: relative ?>
+                  <td style="position: relative"><form method="post">
                     <input type="hidden" name="unfavorite" value="<?php echo $symbol[$i] ?>">
 
-                    <input type="image" src="brokenheart.png" class="heart-button" alt="Unfavorite">
+                    <input id="g_<?php echo $symbol[$i] ?>" onclick="toggleBlack('<?php echo $symbol[$i] ?>')" type="image" style="visibility: visible; position: absolute; top: 0; left: 0;" src="brokenheart.png" class="heart-button" alt="Unfavorite">
+
+                    <input id="b_<?php echo $symbol[$i] ?>" type="image" style="visibility: hidden; position: absolute; top: 0; left: 0;" src="blackbrokenheart.png" class="heart-button" alt="Unfavorite">
                 </form></td>
             </tr>
             <?php
@@ -278,7 +341,7 @@ session_start();
       <h1 style="font-family: 'Poppins', sans-serif; padding-left: 190px;"><?php echo $text; ?></h1>
       <br>
       <div>
-      <?php if($fav){ # BEGIN FAV IF - ONLY SHOW PLANTS IF THERE IS A FAVORITE ?>
+      <?php if($fav && $habitCheck){ # BEGIN FAV IF - ONLY SHOW PLANTS IF THERE IS A FAVORITE AND HABIT?>
         <table class="pics">
             <tr>
               <?php if (is_array(getimagesize($images[$num0]))) { ?>
@@ -313,6 +376,315 @@ session_start();
       </div>
     </footer>
 
+    <footer><hr>
+      <br><br><br>
+      <h1 style="font-family: 'Poppins', sans-serif; padding-left: 190px;">Seed Vendors</h1>
+      <br>
+      <div class="text-box" style="padding-left: 190px;">
+          <p class="source-sans-text">Purchase a diverse array of high-quality seeds, accompanied by detailed imformation and guidance for successful cultivation.</p>
+          <br>
+          <p style="font-family: 'Poppins', sans-serif;"><b>Best Overall:</b> <a href="https://www.burpee.com/" target="_blank">Burpee</a></p><br>
+            <p style="font-family: 'Poppins', sans-serif;"><b>Best for Vegetables:</b> <a href="https://www.johnnyseeds.com/" target="_blank">Johnny's Select Seeds</a></p><br>
+                <p style="font-family: 'Poppins', sans-serif;"><b>Best for Flowers:</b> <a href="https://www.edenbrothers.com/" target="_blank">Eden Brothers</a></p><br>
+                    <p style="font-family: 'Poppins', sans-serif;"><b>Best Budget-Priced Seeds:</b> <a href="https://ferrymorse.com/" target="_blank">Ferry-Morse</a></p><br>
+                        <p style="font-family: 'Poppins', sans-serif;"><b>Best for Direct Seeding:</b> <a href="https://parkseed.com/" target="_blank">Park Seed</a></p><br>
+                            <p style="font-family: 'Poppins', sans-serif;"><b>Best Sowing Instructions:</b> <a href="https://www.botanicalinterests.com/" target="_blank">Botanical Interests</a></p><br>
+                                <p style="font-family: 'Poppins', sans-serif;"><b>Best for Rate Seeds:</b> <a href="https://www.rareseeds.com/" target="_blank">Baker Creek Heirloom Seeds</a></p><br>
+                                    <p style="font-family: 'Poppins', sans-serif;"><b>Best for Herbs:</b> <a href="https://www.reneesgarden.com/" target="_blank">Renee's Garden</a></p><br>
+                                        <p style="font-family: 'Poppins', sans-serif;"><b>Best for Heirloom Seeds:</b> <a href="https://seedsavers.org/" target="_blank">Seed Savers Exchange</a></p><br>
+                                            <p style="font-family: 'Poppins', sans-serif;"><b>Best Organic Seeds:</b> <a href="https://territorialseed.com/" target="_blank">Territorial Seed Company</a></p><br>
+                                                <p style="font-family: 'Poppins', sans-serif;"><b>Source:</b> <a href="https://www.thepioneerwoman.com/home-lifestyle/gardening/g39682996/best-places-to-buy-seeds/" target="_blank">https://www.thepioneerwoman.com/home-lifestyle/gardening/g39682996/best-places-to-buy-seeds/</a></p><br><br><br>
+        </div>
+    </footer>
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const favoritesLink = document.querySelector('a[href="https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442k/favorites_page.php"]');
+
+        favoritesLink.addEventListener("click", function (event) {
+
+            const darkModeEnabled = localStorage.getItem('darkMode') === 'enabled';
+
+            if (!darkModeEnabled) {
+                // Create an overlay container
+                const overlayContainer = document.createElement("div");
+                overlayContainer.style.position = "fixed";
+                overlayContainer.style.top = "0";
+                overlayContainer.style.left = "0";
+                overlayContainer.style.width = "100%";
+                overlayContainer.style.height = "100%";
+                overlayContainer.style.backgroundColor = "#f4ffee";
+                overlayContainer.style.zIndex = "9998"; // Adjust the z-index as needed
+
+                // Create the header bar element
+                const headerBar = document.createElement("div");
+                headerBar.className = "button-bar2";
+                headerBar.innerHTML = `
+                    <div class="logo">
+                        <img src="Front-end/images/logo2.png" alt="Team Plant Logo">
+                        <span>Team Plant</span>
+                    </div>
+                `;
+
+                headerBar.style.zIndex = "9999";
+
+                // Append the header bar to the overlay container
+                overlayContainer.appendChild(headerBar);
+
+                // Create the loading gif element
+                const loadingGif = document.createElement("img");
+                loadingGif.src = "Front-end/images/green_style.gif";
+                loadingGif.alt = "Loading GIF";
+
+                // Apply styles to the loading gif
+                loadingGif.style.position = "absolute";
+                loadingGif.style.top = "50%";
+                loadingGif.style.left = "50%";
+                loadingGif.style.transform = "translate(-50%, -50%)";
+                loadingGif.style.zIndex = "9999";
+                loadingGif.style.width = "350px";
+                loadingGif.style.height = "350px";
+
+                // Append the loading gif to the overlay container
+                overlayContainer.appendChild(loadingGif);
+
+                const logo = document.createElement("img");
+                logo.src = "Front-end/images/logo2.png";
+                logo.alt = "Logo";
+
+                // Apply styles to the logo
+                logo.style.position = "absolute";
+                logo.style.top = "50%";
+                logo.style.left = "50%";
+                logo.style.transform = "translate(-50%, -50%)";
+                logo.style.zIndex = "9999";
+                logo.style.width = "85px";
+                logo.style.height = "85px";
+
+                // Append the logo to the overlay container
+                overlayContainer.appendChild(logo);
+
+                // Create an array of strings
+                const randomStrings = [
+                    "Exploring the green wonders near you. Just a moment!",
+                    "Cultivating the best matches for your zip code. Hang tight!",
+                    "Harvesting the most suitable plants for your zip code. Almost done!",
+                    "Growing personalized plant suggestions for your location. Patience, please!",
+                    "Planting the perfect recommendations for your zip code. Almost there!",
+                ];
+
+                // Create a new element for the random string
+                const randomStringElement = document.createElement("p");
+                randomStringElement.style.position = "absolute";
+                randomStringElement.style.top = "80%";
+                randomStringElement.style.left = "50%";
+                randomStringElement.style.transform = "translate(-50%, -50%)";
+                randomStringElement.style.textAlign = "center";
+                randomStringElement.style.fontFamily = "'Work Sans', sans-serif";
+                randomStringElement.style.fontSize = "18px";
+                randomStringElement.style.color = "#222";
+
+                // Apply transition for a smooth fade effect
+                randomStringElement.style.transition = "opacity 1s ease-in-out";
+
+                // Append the random string element to the overlay container
+                overlayContainer.appendChild(randomStringElement);
+
+                // Index to keep track of the current string
+                let currentIndex = 0;
+
+                // Function to update the random string and initiate fade effect
+                function updateRandomString() {
+                    // Start the fade-out effect by setting opacity to 0
+                    randomStringElement.style.opacity = 0;
+
+                    // Wait for the fade-out animation to complete
+                    setTimeout(() => {
+                        // Update the random string
+                        randomStringElement.textContent = randomStrings[currentIndex];
+
+                        // Start the fade-in effect by setting opacity to 1
+                        randomStringElement.style.opacity = 1;
+
+                        // Increment the index for the next iteration
+                        currentIndex = (currentIndex + 1) % randomStrings.length;
+
+                        // Wait for a few seconds and repeat
+                        setTimeout(updateRandomString, 3000); // Adjust the duration as needed
+                    }, 1000); // Adjust the duration as needed
+                }
+
+                // Start the updateRandomString function
+                updateRandomString();
+
+                // Append the overlay container to the body
+                document.body.appendChild(overlayContainer);
+
+                // Disable scrolling on the original page
+                document.body.style.overflow = "hidden";
+
+            } else {
+
+               // Create an overlay container
+               const overlayContainer = document.createElement("div");
+                overlayContainer.style.position = "fixed";
+                overlayContainer.style.top = "0";
+                overlayContainer.style.left = "0";
+                overlayContainer.style.width = "100%";
+                overlayContainer.style.height = "100%";
+                overlayContainer.style.backgroundColor = "#73736c";
+                overlayContainer.style.zIndex = "9998"; // Adjust the z-index as needed
+
+                // Create the header bar element
+                const headerBar = document.createElement("div");
+                headerBar.className = "button-bar3";
+                headerBar.innerHTML = `
+                    <div class="logo">
+                        <img src="Front-end/images/logo2.png" alt="Team Plant Logo">
+                        <span>Team Plant</span>
+                    </div>
+                `;
+
+                headerBar.style.zIndex = "9999";
+
+                // Append the header bar to the overlay container
+                overlayContainer.appendChild(headerBar);
+
+                // Create the loading gif element
+                const loadingGif = document.createElement("img");
+                loadingGif.src = "Front-end/images/green_style.gif";
+                loadingGif.alt = "Loading GIF";
+
+                // Apply styles to the loading gif
+                loadingGif.style.position = "absolute";
+                loadingGif.style.top = "50%";
+                loadingGif.style.left = "50%";
+                loadingGif.style.transform = "translate(-50%, -50%)";
+                loadingGif.style.zIndex = "9999";
+                loadingGif.style.width = "350px";
+                loadingGif.style.height = "350px";
+                loadingGif.style.filter = "invert(80%)";
+
+                // Append the loading gif to the overlay container
+                overlayContainer.appendChild(loadingGif);
+
+                const logo = document.createElement("img");
+                logo.src = "Front-end/images/logo2.png";
+                logo.alt = "Logo";
+
+                // Apply styles to the logo
+                logo.style.position = "absolute";
+                logo.style.top = "50%";
+                logo.style.left = "50%";
+                logo.style.transform = "translate(-50%, -50%)";
+                logo.style.zIndex = "9999";
+                logo.style.width = "85px";
+                logo.style.height = "85px";
+
+                // Append the logo to the overlay container
+                overlayContainer.appendChild(logo);
+
+                // Create an array of strings
+                const randomStrings = [
+                    "Exploring the green wonders near you. Just a moment!",
+                    "Cultivating the best matches for your zip code. Hang tight!",
+                    "Harvesting the most suitable plants for your zip code. Almost done!",
+                    "Growing personalized plant suggestions for your location. Patience, please!",
+                    "Planting the perfect recommendations for your zip code. Almost there!",
+                ];
+
+                // Create a new element for the random string
+                const randomStringElement = document.createElement("p");
+                randomStringElement.style.position = "absolute";
+                randomStringElement.style.top = "80%";
+                randomStringElement.style.left = "50%";
+                randomStringElement.style.transform = "translate(-50%, -50%)";
+                randomStringElement.style.textAlign = "center";
+                randomStringElement.style.fontFamily = "'Work Sans', sans-serif";
+                randomStringElement.style.fontSize = "18px";
+                randomStringElement.style.color = "#000000";
+
+                // Apply transition for a smooth fade effect
+                randomStringElement.style.transition = "opacity 1s ease-in-out";
+
+                // Append the random string element to the overlay container
+                overlayContainer.appendChild(randomStringElement);
+
+                // Index to keep track of the current string
+                let currentIndex = 0;
+
+                // Function to update the random string and initiate fade effect
+                function updateRandomString() {
+                    // Start the fade-out effect by setting opacity to 0
+                    randomStringElement.style.opacity = 0;
+
+                    // Wait for the fade-out animation to complete
+                    setTimeout(() => {
+                        // Update the random string
+                        randomStringElement.textContent = randomStrings[currentIndex];
+
+                        // Start the fade-in effect by setting opacity to 1
+                        randomStringElement.style.opacity = 1;
+
+                        // Increment the index for the next iteration
+                        currentIndex = (currentIndex + 1) % randomStrings.length;
+
+                        // Wait for a few seconds and repeat
+                        setTimeout(updateRandomString, 3000); // Adjust the duration as needed
+                    }, 1000); // Adjust the duration as needed
+                }
+
+                // Start the updateRandomString function
+                updateRandomString();
+
+                // Append the overlay container to the body
+                document.body.appendChild(overlayContainer);
+
+                // Disable scrolling on the original page
+                document.body.style.overflow = "hidden";
+            }
+        });
+    });
+    </script>
+
+    <!-- script that listens for dark mode toggle -->
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const darkModeToggle = document.getElementById('dark-mode-toggle');
+        const darkModeLink = document.getElementById('dark-mode');
+
+        // Check the initial state of the toggle
+        const initialDarkModeSetting = localStorage.getItem('darkMode');
+        if (initialDarkModeSetting === 'enabled') {
+            darkModeToggle.checked = true;
+            enableDarkMode();
+        } else {
+            // Apply light mode styles when dark mode is not enabled
+            disableDarkMode();
+        }
+
+        // Toggle dark mode when the switch is changed
+        darkModeToggle.addEventListener('change', function () {
+            if (darkModeToggle.checked) {
+                enableDarkMode();
+            } else {
+                disableDarkMode();
+            }
+        });
+
+        // Function to enable dark mode
+        function enableDarkMode() {
+            darkModeLink.removeAttribute('disabled');
+            localStorage.setItem('darkMode', 'enabled');
+        }
+
+        // Function to disable dark mode
+        function disableDarkMode() {
+            darkModeLink.setAttribute('disabled', true);
+            localStorage.setItem('darkMode', 'disabled');
+        }
+    });
+    </script>
 
 </body>
 </html>
